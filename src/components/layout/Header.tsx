@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useCartStore } from '@/lib/store/cart';
@@ -57,7 +58,6 @@ export default function Header() {
 
   // Text colors based on page and scroll state
   const textColorClass = useLightText ? 'text-white' : 'text-charcoal-800';
-  const logoColorClass = useLightText ? 'text-white' : 'text-charcoal-800';
   const iconColorClass = useLightText 
     ? 'text-white/90 hover:text-white' 
     : 'text-charcoal-700 hover:text-charcoal-900';
@@ -73,10 +73,10 @@ export default function Header() {
       <header 
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
           scrolled 
-            ? 'bg-ivory-100/95 backdrop-blur-md py-3 md:py-4 shadow-sm' 
+            ? 'bg-ivory-100/95 backdrop-blur-md py-2 md:py-3 shadow-sm' 
             : hasDarkHero 
-              ? 'bg-transparent py-4 md:py-6' 
-              : 'bg-ivory-100/95 backdrop-blur-md py-3 md:py-4'
+              ? 'bg-transparent py-3 md:py-5' 
+              : 'bg-ivory-100/95 backdrop-blur-md py-2 md:py-3'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
@@ -84,7 +84,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5"
+              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5 z-10"
               aria-label="Toggle menu"
             >
               <span className={`w-5 h-px ${menuBarClass} transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`} />
@@ -105,15 +105,32 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Logo */}
-            <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-              <span className={`font-display text-xl sm:text-2xl md:text-3xl ${logoColorClass} transition-colors duration-300`}>
-                Delphine
-              </span>
+            {/* Logo - Centered */}
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+              {/* Mobile: Icon only */}
+              <div className="block md:hidden relative h-10 w-8">
+                <Image
+                  src="/icon.jpg"
+                  alt="Delphine"
+                  fill
+                  className={`object-contain transition-all duration-300 ${useLightText ? 'brightness-0 invert' : ''}`}
+                  priority
+                />
+              </div>
+              {/* Desktop: Full logo */}
+              <div className="hidden md:block relative h-10 w-32 lg:h-12 lg:w-40">
+                <Image
+                  src="/logo.jpg"
+                  alt="Delphine - Rhythm of a Free Spirit"
+                  fill
+                  className={`object-contain transition-all duration-300 ${useLightText ? 'brightness-0 invert' : ''}`}
+                  priority
+                />
+              </div>
             </Link>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-5 z-10">
               {/* Account */}
               {session ? (
                 <div className="relative group">
@@ -186,8 +203,8 @@ export default function Header() {
 
         {/* Mobile Menu */}
         <div 
-          className={`lg:hidden fixed inset-0 top-[57px] bg-ivory-100 transition-all duration-500 ${
-            mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+          className={`lg:hidden fixed inset-0 top-[53px] bg-ivory-100 transition-all duration-500 z-30 ${
+            mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
           }`}
         >
           <nav className="flex flex-col p-6 gap-1">

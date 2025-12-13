@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -71,7 +72,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="font-display text-2xl">Delphine</Link>
+            <Link href="/" className="inline-block">
+              <div className="relative h-10 w-32">
+                <Image
+                  src="/logo.jpg"
+                  alt="Delphine"
+                  fill
+                  className="object-contain brightness-0 invert"
+                />
+              </div>
+            </Link>
             <p className="body-sm text-stone-400 mt-4 max-w-xs">
               Timeless swimwear crafted with care, inspired by the Mediterranean spirit.
             </p>

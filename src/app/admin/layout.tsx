@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect } from 'react';
 
 const navItems = [
@@ -45,8 +46,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 hidden lg:block fixed h-full">
         <div className="p-6 border-b border-gray-200">
-          <Link href="/admin" className="font-display text-xl text-gray-900">
-            Delphine Admin
+          <Link href="/admin" className="flex items-center gap-2">
+            <div className="relative h-8 w-24">
+              <Image
+                src="/logo.jpg"
+                alt="Delphine Admin"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <span className="text-xs text-gray-500 font-medium">Admin</span>
           </Link>
         </div>
         <nav className="p-4 space-y-1">
