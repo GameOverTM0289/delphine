@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useCartStore } from '@/lib/store/cart';
 import { useWishlistStore } from '@/lib/store/wishlist';
@@ -16,6 +17,7 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const { data: session } = useSession();
   const { items: cartItems, toggleCart } = useCartStore();
   const { items: wishlistItems, toggleWishlist } = useWishlistStore();
@@ -41,11 +43,15 @@ export default function Header() {
   const cartItemCount = mounted ? cartItems.reduce((sum, item) => sum + item.quantity, 0) : 0;
   const wishlistItemCount = mounted ? wishlistItems.length : 0;
 
-  // Determine text color based on scroll state
-  const textColorClass = scrolled ? 'text-charcoal-800' : 'text-white';
-  const logoColorClass = scrolled ? 'text-charcoal-800' : 'text-white';
-  const iconColorClass = scrolled ? 'text-charcoal-700 hover:text-charcoal-900' : 'text-white/90 hover:text-white';
-  const menuBarClass = scrolled ? 'bg-charcoal-700' : 'bg-white';
+  // On non-home pages the header sits on a light background at the top,
+  // so keep nav/logo/icons dark even before scrolling.
+  const useDarkHeader = scrolled || pathname !== '/';
+  const textColorClass = useDarkHeader ? 'text-charcoal-800' : 'text-white';
+  const logoColorClass = useDarkHeader ? 'text-charcoal-800' : 'text-white';
+  const iconColorClass = useDarkHeader
+    ? 'text-charcoal-700 hover:text-charcoal-900'
+    : 'text-white/90 hover:text-white';
+  const menuBarClass = useDarkHeader ? 'bg-charcoal-700' : 'bg-white';
 
   const handleCartOpen = () => {
     setIsCartOpen(true);

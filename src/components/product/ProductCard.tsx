@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice, getImageUrl } from '@/lib/utils';
+import { useWishlistStore } from '@/lib/store/wishlist';
 
 interface ProductCardProps {
   product: {
@@ -20,8 +21,12 @@ interface ProductCardProps {
 const placeholderImage = 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80';
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
+  const toggleItem = useWishlistStore((s) => s.toggleItem);
+  const isInWishlist = useWishlistStore((s) => s.isInWishlist);
+
   const primaryImage = product.images?.[0]?.url ? getImageUrl(product.images[0].url) : placeholderImage;
   const secondaryImage = product.images?.[1]?.url ? getImageUrl(product.images[1].url) : primaryImage;
+  const inWishlist = isInWishlist(product.id);
   
   // Get unique colors
   const colors = product.variants
@@ -38,6 +43,27 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     <Link href={`/products/${product.slug}`} className="group block">
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-ivory-200 mb-4">
+        {/* Wishlist */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleItem({
+              productId: product.id,
+              productName: product.name,
+              productSlug: product.slug,
+              productImage: primaryImage,
+              price: product.price,
+            });
+          }}
+          aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-ivory-100/90 backdrop-blur flex items-center justify-center border border-stone-200/60 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <svg className="w-4 h-4" fill={inWishlist ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
         {/* Primary Image */}
         <Image
           src={primaryImage}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cart';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getImageUrl, PLACEHOLDER_IMAGE } from '@/lib/utils';
 
 interface ProductPageProps {
   params: { slug: string };
@@ -133,7 +133,10 @@ export default function ProductPage({ params }: ProductPageProps) {
     }, 500);
   };
 
-  const images = product.images || [];
+  const images = (product.images || []).map((img: any) => ({
+    ...img,
+    url: img?.url ? getImageUrl(img.url) : PLACEHOLDER_IMAGE,
+  }));
 
   return (
     <div className="min-h-screen bg-ivory-100 pt-24">
@@ -322,14 +325,12 @@ export default function ProductPage({ params }: ProductPageProps) {
               {relatedProducts.map((prod) => (
                 <Link key={prod.id} href={`/products/${prod.slug}`} className="group">
                   <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-4">
-                    {prod.images?.[0] && (
-                      <Image
-                        src={prod.images[0].url}
-                        alt={prod.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )}
+                    <Image
+                      src={prod.images?.[0]?.url ? getImageUrl(prod.images[0].url) : PLACEHOLDER_IMAGE}
+                      alt={prod.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
                   <h3 className="font-display text-base text-charcoal-800 text-center mb-1">{prod.name}</h3>
                   <p className="text-xs text-stone-500 text-center">{formatPrice(prod.price)}</p>
