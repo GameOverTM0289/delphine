@@ -1,105 +1,101 @@
-import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import ProductCard from '@/components/product/ProductCard';
 import prisma from '@/lib/db/prisma';
-import { getImageUrl } from '@/lib/utils';
+import { notFound } from 'next/navigation';
 
 interface CollectionPageProps {
   params: { slug: string };
 }
 
-async function getCollection(slug: string) {
-  const collection = await prisma.collection.findUnique({
+const categoryImages: Record<string, string> = {
+  'bikinis': 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=1920&q=80',
+  'one-pieces': 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=1920&q=80',
+};
+
+async function getCategoryData(slug: string) {
+  const category = await prisma.category.findUnique({
     where: { slug },
     include: {
       products: {
         where: { isActive: true },
-        include: { images: true, variants: true },
+        include: {
+          images: { orderBy: { position: 'asc' } },
+          variants: true,
+        },
+        orderBy: [
+          { featured: 'desc' },
+          { createdAt: 'desc' },
+        ],
       },
     },
   });
 
-  // Also check if it's a category slug
-  if (!collection) {
-    const category = await prisma.category.findUnique({
-      where: { slug },
-      include: {
-        products: {
-          where: { isActive: true },
-          include: { images: true, variants: true },
-        },
-      },
-    });
-
-    if (category) {
-      return {
-        ...category,
-        isCategory: true,
-      };
-    }
-  }
-
-  return collection;
+  return category;
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
-  const collection = await getCollection(params.slug);
+  const category = await getCategoryData(params.slug);
 
-  if (!collection) notFound();
+  if (!category) {
+    notFound();
+  }
+
+  const heroImage = categoryImages[params.slug] || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80';
 
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[50vh] min-h-[400px] pt-20">
+      <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center">
         <Image
-          src={getImageUrl(collection.image || '')}
-          alt={collection.name}
+          src={heroImage}
+          alt={category.name}
           fill
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white">
-            <span className="text-sm tracking-[0.3em] uppercase opacity-80">Collection</span>
-            <h1 className="heading-1 mt-2">{collection.name}</h1>
-          </div>
-        </div>
-      </section>
-
-      {/* Breadcrumb & Description */}
-      <section className="py-8 border-b">
-        <div className="container-custom">
-          <nav className="text-sm text-gray-500 mb-4">
-            <Link href="/" className="hover:text-gray-900">Home</Link>
-            <span className="mx-2">/</span>
-            <Link href="/collections" className="hover:text-gray-900">Collections</Link>
-            <span className="mx-2">/</span>
-            <span className="text-gray-900">{collection.name}</span>
-          </nav>
-          {collection.description && (
-            <p className="text-gray-600 max-w-2xl">{collection.description}</p>
+        <div className="absolute inset-0 bg-charcoal-900/40" />
+        <div className="relative text-center text-ivory-100 z-10 px-6">
+          <span className="text-xs font-medium tracking-[0.2em] uppercase text-ivory-200">Collection</span>
+          <h1 className="font-display text-4xl md:text-5xl font-light mt-4">{category.name}</h1>
+          {category.description && (
+            <p className="text-sm text-ivory-200 mt-4 max-w-md mx-auto">{category.description}</p>
           )}
         </div>
       </section>
 
       {/* Products */}
-      <section className="section">
-        <div className="container-custom">
-          <p className="text-sm text-gray-500 mb-8">
-            {collection.products.length} product{collection.products.length !== 1 ? 's' : ''}
+      <section className="py-16 md:py-20 bg-ivory-200">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          {/* Breadcrumb */}
+          <nav className="mb-10">
+            <ol className="flex items-center justify-center gap-2 text-xs text-stone-500">
+              <li><Link href="/" className="hover:text-charcoal-700 transition-colors">Home</Link></li>
+              <li>/</li>
+              <li><Link href="/collections" className="hover:text-charcoal-700 transition-colors">Collections</Link></li>
+              <li>/</li>
+              <li className="text-charcoal-700">{category.name}</li>
+            </ol>
+          </nav>
+
+          {/* Product Count */}
+          <p className="text-xs text-stone-500 text-center mb-10">
+            {category.products.length} {category.products.length === 1 ? 'piece' : 'pieces'}
           </p>
-          {collection.products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {collection.products.map((product: any, index: number) => (
-                <ProductCard key={product.id} product={product} priority={index < 4} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-500 mb-4">No products in this collection yet.</p>
-              <Link href="/shop" className="btn-primary">View All Products</Link>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16">
+            {category.products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {category.products.length === 0 && (
+            <div className="text-center py-20">
+              <p className="text-stone-500 mb-6">No products in this collection yet.</p>
+              <Link href="/shop" className="px-8 py-3 bg-charcoal-800 text-ivory-100 text-xs tracking-widest uppercase">
+                Shop All
+              </Link>
             </div>
           )}
         </div>
