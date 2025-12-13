@@ -262,3 +262,13 @@ model SiteSettings {
   taxRate              Float  @default(0.20)
   currency             String @default("EUR")
 }
+
+// ============ NEWSLETTER ============
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  firstName      String?
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+}

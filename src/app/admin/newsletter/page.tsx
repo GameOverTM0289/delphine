@@ -1,10 +1,24 @@
 import prisma from '@/lib/db/prisma';
-import { formatDateTime } from '@/lib/utils';
+
+// Prevent static generation - this page needs database access
+export const dynamic = 'force-dynamic';
 
 async function getSubscribers() {
-  return prisma.newsletterSubscriber.findMany({
-    orderBy: { subscribedAt: 'desc' },
-  });
+  try {
+    return await prisma.newsletterSubscriber.findMany({
+      orderBy: { subscribedAt: 'desc' },
+    });
+  } catch {
+    return [];
+  }
+}
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
 }
 
 export default async function AdminNewsletterPage() {
@@ -12,30 +26,32 @@ export default async function AdminNewsletterPage() {
   const activeCount = subscribers.filter(s => s.isActive).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="heading-2">Newsletter</h1>
-        <p className="text-gray-600 mt-1">{activeCount} active subscribers</p>
+        <p className="body text-stone-500 mt-1">{activeCount} active subscribers</p>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="admin-stat-card">
-          <span className="text-3xl mb-2">📧</span>
-          <span className="text-sm text-gray-500">Total</span>
-          <span className="text-2xl font-bold">{subscribers.length}</span>
+          <span className="text-2xl mb-2">📧</span>
+          <span className="body-sm text-stone-500">Total</span>
+          <span className="text-2xl font-display">{subscribers.length}</span>
         </div>
         <div className="admin-stat-card">
-          <span className="text-3xl mb-2">✅</span>
-          <span className="text-sm text-gray-500">Active</span>
-          <span className="text-2xl font-bold text-green-600">{activeCount}</span>
+          <span className="text-2xl mb-2">✓</span>
+          <span className="body-sm text-stone-500">Active</span>
+          <span className="text-2xl font-display text-green-600">{activeCount}</span>
         </div>
         <div className="admin-stat-card">
-          <span className="text-3xl mb-2">❌</span>
-          <span className="text-sm text-gray-500">Unsubscribed</span>
-          <span className="text-2xl font-bold text-red-600">{subscribers.length - activeCount}</span>
+          <span className="text-2xl mb-2">✗</span>
+          <span className="body-sm text-stone-500">Unsubscribed</span>
+          <span className="text-2xl font-display text-red-600">{subscribers.length - activeCount}</span>
         </div>
       </div>
 
+      {/* Table */}
       <div className="admin-card">
         <h2 className="heading-4 mb-6">All Subscribers</h2>
         {subscribers.length > 0 ? (
@@ -57,7 +73,7 @@ export default async function AdminNewsletterPage() {
                         {sub.isActive ? 'Active' : 'Unsubscribed'}
                       </span>
                     </td>
-                    <td className="text-sm text-gray-500">{formatDateTime(sub.subscribedAt)}</td>
+                    <td className="body-sm text-stone-500">{formatDate(sub.subscribedAt)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -65,8 +81,7 @@ export default async function AdminNewsletterPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <span className="text-5xl mb-4 block">📭</span>
-            <p className="text-gray-500">No subscribers yet</p>
+            <p className="body text-stone-500">No subscribers yet</p>
           </div>
         )}
       </div>

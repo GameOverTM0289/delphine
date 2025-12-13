@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -43,34 +43,34 @@ export default function LoginPage() {
   return (
     <>
       <h1 className="heading-3 mb-2">Sign In</h1>
-      <p className="text-gray-600 mb-8">Welcome back! Please enter your details.</p>
+      <p className="body text-stone-500 mb-8">Welcome back</p>
 
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded mb-6 text-sm">
+        <div className="bg-red-50 text-red-600 px-4 py-3 mb-6 text-sm">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="label">Email</label>
+          <label className="label block mb-2">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input-field"
+            className="input-elegant"
             placeholder="Enter your email"
             required
           />
         </div>
 
         <div>
-          <label className="label">Password</label>
+          <label className="label block mb-2">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input-field"
+            className="input-elegant"
             placeholder="Enter your password"
             required
           />
@@ -81,19 +81,26 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-gray-600 mt-6">
+      <p className="text-center body-sm text-stone-500 mt-6">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="text-ocean-600 hover:underline">
+        <Link href="/register" className="text-charcoal-700 underline">
           Create one
         </Link>
       </p>
 
-      {/* Demo credentials */}
-      <div className="mt-8 p-4 bg-gray-50 rounded text-sm">
+      <div className="mt-8 p-4 bg-ivory-200 text-sm">
         <p className="font-medium mb-2">Demo Accounts:</p>
-        <p className="text-gray-600">Admin: admin@delphine.com / admin123</p>
-        <p className="text-gray-600">User: test@example.com / test123</p>
+        <p className="body-sm text-stone-500">Admin: admin@delphine.com / admin123</p>
+        <p className="body-sm text-stone-500">User: test@example.com / test123</p>
       </div>
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
