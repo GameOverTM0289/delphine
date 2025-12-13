@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getImageUrl } from '@/lib/utils';
 
 interface ProductCardProps {
   product: {
@@ -20,8 +20,8 @@ interface ProductCardProps {
 const placeholderImage = 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80';
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  const primaryImage = product.images?.[0]?.url || placeholderImage;
-  const secondaryImage = product.images?.[1]?.url || primaryImage;
+  const primaryImage = product.images?.[0]?.url ? getImageUrl(product.images[0].url) : placeholderImage;
+  const secondaryImage = product.images?.[1]?.url ? getImageUrl(product.images[1].url) : primaryImage;
   
   // Get unique colors
   const colors = product.variants

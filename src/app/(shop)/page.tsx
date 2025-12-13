@@ -6,84 +6,6 @@ import Image from 'next/image';
 import HeroSlider from '@/components/home/HeroSlider';
 import ProductCard from '@/components/product/ProductCard';
 
-// Custom Cursor Component
-function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const cursorRingRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    const cursorRing = cursorRingRef.current;
-    
-    if (!cursor || !cursorRing) return;
-
-    let mouseX = 0;
-    let mouseY = 0;
-    let cursorX = 0;
-    let cursorY = 0;
-    let ringX = 0;
-    let ringY = 0;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"], input, select, textarea')) {
-        setIsHovering(true);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-    };
-
-    const animate = () => {
-      // Smooth follow for cursor
-      cursorX += (mouseX - cursorX) * 0.2;
-      cursorY += (mouseY - cursorY) * 0.2;
-      
-      // Slower follow for ring
-      ringX += (mouseX - ringX) * 0.1;
-      ringY += (mouseY - ringY) * 0.1;
-
-      cursor.style.left = `${cursorX}px`;
-      cursor.style.top = `${cursorY}px`;
-      cursorRing.style.left = `${ringX}px`;
-      cursorRing.style.top = `${ringY}px`;
-
-      requestAnimationFrame(animate);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseover', handleMouseEnter);
-    document.addEventListener('mouseout', handleMouseLeave);
-    animate();
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseover', handleMouseEnter);
-      document.removeEventListener('mouseout', handleMouseLeave);
-    };
-  }, []);
-
-  return (
-    <>
-      <div 
-        ref={cursorRef} 
-        className={`custom-cursor hidden lg:block ${isHovering ? 'hover' : ''}`}
-      />
-      <div 
-        ref={cursorRingRef} 
-        className={`custom-cursor-ring hidden lg:block ${isHovering ? 'hover' : ''}`}
-      />
-    </>
-  );
-}
-
 // Animated Section Component
 function AnimatedSection({ 
   children, 
@@ -161,18 +83,6 @@ function ParallaxImage({ src, alt, className = '' }: { src: string; alt: string;
   );
 }
 
-// Marquee Component
-function Marquee({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="marquee-container py-4 bg-charcoal-800">
-      <div className="marquee-content">
-        {children}
-        {children}
-      </div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
 
@@ -202,43 +112,43 @@ export default function HomePage() {
     },
   ];
 
-  // Sample featured products
+  // Sample featured products with working images
   const featuredProducts = [
     {
       id: '1',
       name: 'Riviera Bikini',
       slug: 'riviera-bikini',
       description: 'Classic two-piece with modern elegance',
-      price: 12900,
+      price: 129,
       images: [{ url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80', alt: 'Riviera Bikini' }],
-      variants: [{ id: '1', price: 12900 }],
+      variants: [{ id: '1', price: 129 }],
     },
     {
       id: '2',
       name: 'Côte d\'Azur One-Piece',
       slug: 'cote-dazur-one-piece',
       description: 'Sophisticated silhouette',
-      price: 15900,
+      price: 159,
       images: [{ url: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=600&q=80', alt: 'Côte d\'Azur One-Piece' }],
-      variants: [{ id: '2', price: 15900 }],
+      variants: [{ id: '2', price: 159 }],
     },
     {
       id: '3',
       name: 'Sardinia Wrap',
       slug: 'sardinia-wrap',
       description: 'Effortless beach cover',
-      price: 8900,
+      price: 89,
       images: [{ url: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=600&q=80', alt: 'Sardinia Wrap' }],
-      variants: [{ id: '3', price: 8900 }],
+      variants: [{ id: '3', price: 89 }],
     },
     {
       id: '4',
       name: 'Amalfi Triangle',
       slug: 'amalfi-triangle',
       description: 'Timeless triangle cut',
-      price: 11900,
+      price: 119,
       images: [{ url: 'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=600&q=80', alt: 'Amalfi Triangle' }],
-      variants: [{ id: '4', price: 11900 }],
+      variants: [{ id: '4', price: 119 }],
     },
   ];
 
@@ -246,24 +156,7 @@ export default function HomePage() {
 
   return (
     <>
-      <CustomCursor />
-      <div className="grain-overlay" />
-      
       <HeroSlider slides={heroSlides} />
-
-      {/* Announcement Marquee */}
-      <Marquee>
-        <span className="inline-flex items-center gap-12 text-xs tracking-[0.3em] uppercase text-ivory-100 px-6">
-          <span>Free Shipping Over €150</span>
-          <span className="w-1 h-1 bg-ivory-100/50 rounded-full" />
-          <span>Sustainable Materials</span>
-          <span className="w-1 h-1 bg-ivory-100/50 rounded-full" />
-          <span>Handcrafted with Love</span>
-          <span className="w-1 h-1 bg-ivory-100/50 rounded-full" />
-          <span>Easy Returns</span>
-          <span className="w-1 h-1 bg-ivory-100/50 rounded-full" />
-        </span>
-      </Marquee>
 
       {/* Featured Products */}
       <section className="py-24 md:py-32 bg-ivory-100 relative overflow-hidden">
@@ -550,45 +443,13 @@ export default function HomePage() {
                       fill="currentColor" 
                       viewBox="0 0 24 24"
                     >
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/>
                     </svg>
                   </div>
                 </a>
               </AnimatedSection>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-28 bg-charcoal-800 text-ivory-100 relative overflow-hidden">
-        {/* Decorative wave */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-ivory-100/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-ivory-100/20 to-transparent" />
-        
-        <div className="max-w-xl mx-auto px-6 text-center relative">
-          <AnimatedSection>
-            <h2 className="font-display text-3xl md:text-4xl font-light mb-4">Stay Connected</h2>
-            <p className="text-sm text-stone-400 mb-10">
-              Be the first to know about new collections and exclusive offers.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-1 px-6 py-4 bg-transparent border border-charcoal-600 text-ivory-100 placeholder:text-stone-500 focus:outline-none focus:border-ivory-100/50 transition-colors text-sm"
-              />
-              <button 
-                type="submit" 
-                className="px-8 py-4 bg-ivory-100 text-charcoal-800 text-xs font-medium tracking-[0.15em] uppercase hover:bg-ivory-200 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
-            <p className="text-xs text-stone-500 mt-6">
-              By subscribing, you agree to our Privacy Policy.
-            </p>
-          </AnimatedSection>
         </div>
       </section>
     </>
