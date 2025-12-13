@@ -339,11 +339,19 @@
   }
   
   .admin-nav-item {
-    @apply flex items-center gap-3 px-6 py-3 text-sm text-stone-300 hover:text-ivory-100 hover:bg-charcoal-700 transition-colors;
+    @apply flex items-center gap-3 px-4 py-3 text-sm rounded-lg transition-colors;
+    color: #525252;
+  }
+  
+  .admin-nav-item:hover {
+    color: #1A1A1A;
+    background-color: #F5F5F5;
   }
   
   .admin-nav-item.active {
-    @apply text-ivory-100 bg-charcoal-700;
+    color: #1A1A1A;
+    background-color: #E8E8E8;
+    font-weight: 500;
   }
   
   .admin-card {

@@ -4,11 +4,18 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cart';
-import { formatPrice, getImageUrl, PLACEHOLDER_IMAGE } from '@/lib/utils';
+import { useWishlistStore } from '@/lib/store/wishlist';
+import { formatPrice, getImageUrl } from '@/lib/utils';
 
 interface ProductPageProps {
   params: { slug: string };
 }
+
+const placeholderImages = [
+  'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80',
+  'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80',
+  'https://images.unsplash.com/photo-1584374232938-8ba5e6ee5365?w=800&q=80',
+];
 
 export default function ProductPage({ params }: ProductPageProps) {
   const [product, setProduct] = useState<any>(null);
@@ -19,9 +26,14 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
-  const { addItem, toggleCart } = useCartStore();
+  const { addItem, openCart } = useCartStore();
+  const { toggleItem, isInWishlist } = useWishlistStore();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    useWishlistStore.persist.rehydrate();
+    
     async function fetchData() {
       try {
         const res = await fetch(`/api/products/${params.slug}`);
@@ -90,6 +102,33 @@ export default function ProductPage({ params }: ProductPageProps) {
   const selectedVariant = selectedSize && selectedColor ? getVariant(selectedSize, selectedColor) : null;
   const isInStock = selectedVariant?.stockQuantity > 0;
 
+  // Get product images with fallback
+  const getProductImages = () => {
+    if (product.images && product.images.length > 0) {
+      return product.images.map((img: any) => ({
+        ...img,
+        url: getImageUrl(img.url)
+      }));
+    }
+    // Return placeholder images
+    return placeholderImages.map((url, i) => ({ url, alt: product.name }));
+  };
+
+  const images = getProductImages();
+  const primaryImage = images[0]?.url || placeholderImages[0];
+
+  const inWishlist = mounted && isInWishlist(product.id);
+
+  const handleWishlistClick = () => {
+    toggleItem({
+      productId: product.id,
+      productName: product.name,
+      productSlug: product.slug,
+      productImage: primaryImage,
+      price: product.price,
+    });
+  };
+
   const handleAddToCart = () => {
     setError('');
     
@@ -112,14 +151,12 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     setAdding(true);
     
-    const imageUrl = product.images?.[0]?.url || '';
-    
     addItem({
       productId: product.id,
       variantId: selectedVariant.id,
       productName: product.name,
       productSlug: product.slug,
-      productImage: imageUrl,
+      productImage: primaryImage,
       variantName: `${selectedSize} / ${selectedColor}`,
       size: selectedSize,
       color: selectedColor,
@@ -129,18 +166,13 @@ export default function ProductPage({ params }: ProductPageProps) {
     
     setTimeout(() => {
       setAdding(false);
-      toggleCart();
+      openCart();
     }, 500);
   };
 
-  const images = (product.images || []).map((img: any) => ({
-    ...img,
-    url: img?.url ? getImageUrl(img.url) : PLACEHOLDER_IMAGE,
-  }));
-
   return (
     <div className="min-h-screen bg-ivory-100 pt-24">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8">
           <ol className="flex items-center gap-2 text-xs text-stone-500">
@@ -148,32 +180,30 @@ export default function ProductPage({ params }: ProductPageProps) {
             <li>/</li>
             <li><Link href="/shop" className="hover:text-charcoal-700 transition-colors">Shop</Link></li>
             <li>/</li>
-            <li className="text-charcoal-700">{product.name}</li>
+            <li className="text-charcoal-700 truncate max-w-[150px]">{product.name}</li>
           </ol>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20">
           {/* Images */}
           <div className="space-y-4">
             <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden">
-              {images[selectedImage] && (
-                <Image
-                  src={images[selectedImage].url}
-                  alt={product.name}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              )}
+              <Image
+                src={images[selectedImage]?.url || primaryImage}
+                alt={product.name}
+                fill
+                priority
+                className="object-cover"
+              />
             </div>
             
             {images.length > 1 && (
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
                 {images.map((img: any, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative w-20 aspect-[3/4] bg-ivory-200 overflow-hidden transition-opacity ${
+                    className={`relative w-16 sm:w-20 aspect-[3/4] bg-ivory-200 overflow-hidden flex-shrink-0 transition-opacity ${
                       selectedImage === index ? 'ring-1 ring-charcoal-700' : 'opacity-60 hover:opacity-100'
                     }`}
                   >
@@ -186,20 +216,47 @@ export default function ProductPage({ params }: ProductPageProps) {
 
           {/* Product Info */}
           <div className="lg:py-8">
-            <h1 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mb-4">{product.name}</h1>
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-light text-charcoal-800">{product.name}</h1>
+              
+              {/* Wishlist Button */}
+              <button
+                onClick={handleWishlistClick}
+                className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full border transition-all ${
+                  inWishlist 
+                    ? 'bg-charcoal-800 border-charcoal-800 text-ivory-100' 
+                    : 'border-stone-300 text-charcoal-600 hover:border-charcoal-700 hover:text-charcoal-800'
+                }`}
+                aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <svg 
+                  className="w-5 h-5" 
+                  fill={inWishlist ? 'currentColor' : 'none'} 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1.5} 
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                  />
+                </svg>
+              </button>
+            </div>
             
             <div className="mb-8">
               {product.compareAtPrice && product.compareAtPrice > product.price ? (
                 <div className="flex items-center gap-3">
-                  <span className="font-display text-xl text-stone-400 line-through">
+                  <span className="font-display text-lg sm:text-xl text-stone-400 line-through">
                     {formatPrice(product.compareAtPrice)}
                   </span>
-                  <span className="font-display text-xl text-charcoal-800">
+                  <span className="font-display text-lg sm:text-xl text-charcoal-800">
                     {formatPrice(product.price)}
                   </span>
                 </div>
               ) : (
-                <span className="font-display text-xl text-charcoal-800">
+                <span className="font-display text-lg sm:text-xl text-charcoal-800">
                   {formatPrice(product.price)}
                 </span>
               )}
@@ -212,12 +269,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                   <span className="text-xs font-medium tracking-widest uppercase text-stone-500">Color</span>
                   <span className="text-sm text-charcoal-700">{selectedColor}</span>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {colors.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setSelectedColor(c.name)}
-                      className={`w-10 h-10 rounded-full transition-all ${
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-all ${
                         selectedColor === c.name 
                           ? 'ring-2 ring-offset-2 ring-charcoal-700' 
                           : 'hover:ring-2 hover:ring-offset-2 hover:ring-stone-300'
@@ -249,7 +306,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         disabled={!inStock}
-                        className={`min-w-[56px] h-12 px-4 text-xs font-medium tracking-wider uppercase border transition-all ${
+                        className={`min-w-[48px] sm:min-w-[56px] h-10 sm:h-12 px-3 sm:px-4 text-xs font-medium tracking-wider uppercase border transition-all ${
                           selectedSize === size
                             ? 'border-charcoal-800 bg-charcoal-800 text-ivory-100'
                             : inStock
@@ -272,18 +329,20 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             )}
 
-            {/* Add to Cart */}
-            <button
-              onClick={handleAddToCart}
-              disabled={adding}
-              className="w-full py-4 bg-charcoal-800 text-ivory-100 text-xs font-medium tracking-widest uppercase hover:bg-charcoal-900 transition-colors disabled:opacity-50"
-            >
-              {adding ? 'Adding...' : 'Add to Bag'}
-            </button>
+            {/* Add to Cart & Wishlist Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleAddToCart}
+                disabled={adding}
+                className="flex-1 py-4 bg-charcoal-800 text-ivory-100 text-xs font-medium tracking-widest uppercase hover:bg-charcoal-900 transition-colors disabled:opacity-50"
+              >
+                {adding ? 'Adding...' : 'Add to Bag'}
+              </button>
+            </div>
 
             {/* Description */}
             {product.description && (
-              <div className="mt-12 pt-8 border-t border-stone-200">
+              <div className="mt-10 sm:mt-12 pt-8 border-t border-stone-200">
                 <h3 className="text-xs font-medium tracking-widest uppercase text-stone-500 mb-4">Description</h3>
                 <p className="text-sm text-stone-600 leading-relaxed">{product.description}</p>
               </div>
@@ -303,13 +362,13 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             {/* Shipping Info */}
             <div className="mt-8 pt-8 border-t border-stone-200">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Free Shipping</h4>
-                  <p className="text-xs text-stone-500">On orders over €100</p>
+                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Shipping</h4>
+                  <p className="text-xs text-stone-500">2-5 business days</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Free Returns</h4>
+                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Returns</h4>
                   <p className="text-xs text-stone-500">Within 14 days</p>
                 </div>
               </div>
@@ -317,25 +376,31 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        {/* Recommended Products */}
+        {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <section className="mt-24 pt-16 border-t border-stone-200">
-            <h2 className="font-display text-2xl text-charcoal-800 text-center mb-12">You May Also Like</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6">
-              {relatedProducts.map((prod) => (
-                <Link key={prod.id} href={`/products/${prod.slug}`} className="group">
-                  <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-4">
-                    <Image
-                      src={prod.images?.[0]?.url ? getImageUrl(prod.images[0].url) : PLACEHOLDER_IMAGE}
-                      alt={prod.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <h3 className="font-display text-base text-charcoal-800 text-center mb-1">{prod.name}</h3>
-                  <p className="text-xs text-stone-500 text-center">{formatPrice(prod.price)}</p>
-                </Link>
-              ))}
+          <section className="mt-16 sm:mt-24 pt-12 sm:pt-16 border-t border-stone-200">
+            <h2 className="font-display text-xl sm:text-2xl text-charcoal-800 text-center mb-10 sm:mb-12">You May Also Like</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
+              {relatedProducts.map((prod) => {
+                const prodImage = prod.images?.[0]?.url 
+                  ? getImageUrl(prod.images[0].url) 
+                  : placeholderImages[parseInt(prod.id) % placeholderImages.length];
+                
+                return (
+                  <Link key={prod.id} href={`/products/${prod.slug}`} className="group">
+                    <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-4">
+                      <Image
+                        src={prodImage}
+                        alt={prod.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <h3 className="font-display text-sm sm:text-base text-charcoal-800 text-center mb-1 line-clamp-2">{prod.name}</h3>
+                    <p className="text-xs text-stone-500 text-center">{formatPrice(prod.price)}</p>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}
