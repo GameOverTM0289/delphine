@@ -3,6 +3,8 @@ import Image from 'next/image';
 import prisma from '@/lib/db/prisma';
 import { formatPrice } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getData() {
   const products = await prisma.product.findMany({
     where: { isActive: true },

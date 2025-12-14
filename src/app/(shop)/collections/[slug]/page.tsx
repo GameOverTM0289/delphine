@@ -4,6 +4,8 @@ import ProductCard from '@/components/product/ProductCard';
 import prisma from '@/lib/db/prisma';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 interface CollectionPageProps {
   params: { slug: string };
 }

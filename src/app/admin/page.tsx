@@ -2,6 +2,8 @@ import Link from 'next/link';
 import prisma from '@/lib/db/prisma';
 import { formatPrice, formatDate } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getDashboardData() {
   const [
     totalProducts,
@@ -13,7 +15,7 @@ async function getDashboardData() {
   ] = await Promise.all([
     prisma.product.count({ where: { isActive: true } }),
     prisma.order.count(),
-    prisma.user.count({ where: { role: 'CUSTOMER' } }),
+    prisma.user.count({ where: { role: 'USER' } }),
     prisma.order.aggregate({
       _sum: { total: true },
       where: { paymentStatus: 'PAID' },

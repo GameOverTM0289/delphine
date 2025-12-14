@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 async function getSubscribers() {
   try {
     return await prisma.newsletterSubscriber.findMany({
-      orderBy: { subscribedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
   } catch {
     return [];

@@ -1,6 +1,8 @@
 import prisma from '@/lib/db/prisma';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getOrders() {
   return prisma.order.findMany({
     include: { user: true },

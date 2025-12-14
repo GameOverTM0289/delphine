@@ -1,9 +1,11 @@
 import prisma from '@/lib/db/prisma';
 import { formatDate } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getCustomers() {
   return prisma.user.findMany({
-    where: { role: 'CUSTOMER' },
+    where: { role: 'USER' },
     include: { _count: { select: { orders: true } } },
     orderBy: { createdAt: 'desc' },
   });

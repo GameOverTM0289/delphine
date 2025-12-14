@@ -2,10 +2,12 @@ import Image from 'next/image';
 import prisma from '@/lib/db/prisma';
 import { formatPrice, getImageUrl } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getProducts() {
   return prisma.product.findMany({
     include: {
-      images: { where: { isPrimary: true }, take: 1 },
+      images: { orderBy: { position: 'asc' }, take: 1 },
       category: true,
       _count: { select: { variants: true } },
     },
