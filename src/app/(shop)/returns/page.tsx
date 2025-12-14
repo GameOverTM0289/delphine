@@ -1,71 +1,77 @@
 export default function ReturnsPage() {
   return (
-    <>
-      <section className="pt-32 pb-16 bg-ivory-100">
-        <div className="container-luxury text-center">
-          <span className="label animate-fade-down">Customer Care</span>
-          <h1 className="heading-display mt-4 animate-fade-up">Returns</h1>
+    <main className="min-h-screen bg-cream pt-28 pb-20">
+      <div className="container-main max-w-3xl">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-display text-3xl md:text-4xl mb-4">Returns & Exchanges</h1>
+          <p className="text-body">
+            We want you to love your Delphine pieces.
+          </p>
         </div>
-      </section>
 
-      <section className="section bg-ivory-200">
-        <div className="container-narrow">
-          {/* Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            {[
-              { title: '14 Days', desc: 'Return window from delivery' },
-              { title: 'Free Returns', desc: 'On all Albanian orders' },
-              { title: 'Easy Exchange', desc: 'Different size? We\'ll swap it' },
-            ].map((item) => (
-              <div key={item.title} className="text-center p-6 bg-ivory-100">
-                <h3 className="font-display text-xl text-charcoal-800 mb-2">{item.title}</h3>
-                <p className="body-sm text-stone-500">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+        {/* Content */}
+        <div className="space-y-12">
+          <section>
+            <h2 className="text-display text-xl mb-6">Return Policy</h2>
+            <div className="bg-white p-6">
+              <p className="text-body leading-relaxed mb-4">
+                We accept returns within 14 days of delivery. Items must be unworn, unwashed, 
+                and in their original packaging with all tags attached.
+              </p>
+              <p className="text-body leading-relaxed">
+                For hygiene reasons, swimwear that has been worn or has had the hygiene seal removed 
+                cannot be returned.
+              </p>
+            </div>
+          </section>
 
-          {/* Process */}
-          <div className="mb-20">
-            <h2 className="heading-3 mb-10 text-center">How to Return</h2>
-            <div className="space-y-6">
-              {[
-                { step: '01', title: 'Start Your Return', desc: 'Log into your account and select the items you wish to return.' },
-                { step: '02', title: 'Pack Your Items', desc: 'Place items in original packaging with tags attached.' },
-                { step: '03', title: 'Ship It Back', desc: 'Use the prepaid label or ship via your preferred carrier.' },
-                { step: '04', title: 'Get Refunded', desc: 'Refunds processed within 3-5 business days of receipt.' },
-              ].map((item) => (
-                <div key={item.step} className="flex gap-8 items-start p-6 bg-ivory-100">
-                  <span className="font-display text-2xl text-stone-300">{item.step}</span>
-                  <div>
-                    <h3 className="font-display text-lg text-charcoal-800 mb-2">{item.title}</h3>
-                    <p className="body text-stone-500">{item.desc}</p>
-                  </div>
+          <section>
+            <h2 className="text-display text-xl mb-6">How to Return</h2>
+            <div className="space-y-4">
+              <div className="bg-white p-6 flex gap-4">
+                <span className="w-8 h-8 flex items-center justify-center border border-charcoal-200 rounded-full text-sm flex-shrink-0">1</span>
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Contact Us</h3>
+                  <p className="text-body text-sm">Email hello@delphineswimwear.com with your order number and reason for return.</p>
                 </div>
-              ))}
+              </div>
+              <div className="bg-white p-6 flex gap-4">
+                <span className="w-8 h-8 flex items-center justify-center border border-charcoal-200 rounded-full text-sm flex-shrink-0">2</span>
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Pack Your Items</h3>
+                  <p className="text-body text-sm">Place items in original packaging or a secure box.</p>
+                </div>
+              </div>
+              <div className="bg-white p-6 flex gap-4">
+                <span className="w-8 h-8 flex items-center justify-center border border-charcoal-200 rounded-full text-sm flex-shrink-0">3</span>
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Ship & Track</h3>
+                  <p className="text-body text-sm">Send your package using a tracked shipping method.</p>
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          {/* Conditions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 bg-ivory-100">
-              <h3 className="label text-green-700 mb-4">We Accept</h3>
-              <ul className="space-y-2 body text-stone-600">
-                <li>Unworn items with all tags attached</li>
-                <li>Items with hygiene liner intact</li>
-                <li>Items in original packaging</li>
-              </ul>
-            </div>
-            <div className="p-8 bg-ivory-100">
-              <h3 className="label text-red-700 mb-4">We Cannot Accept</h3>
-              <ul className="space-y-2 body text-stone-600">
-                <li>Items worn, washed, or altered</li>
-                <li>Swimwear without hygiene liner</li>
-                <li>Sale items marked as final sale</li>
-              </ul>
-            </div>
-          </div>
+          <section>
+            <h2 className="text-display text-xl mb-6">Refunds</h2>
+            <p className="text-body leading-relaxed">
+              Once we receive and inspect your return, we&apos;ll process your refund within 5-7 business days. 
+              The refund will be credited to your original payment method.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-display text-xl mb-6">Exchanges</h2>
+            <p className="text-body leading-relaxed mb-6">
+              For exchanges, please return your original item and place a new order for the desired size or color.
+            </p>
+            <a href="mailto:hello@delphineswimwear.com" className="btn-outline">
+              Start a Return
+            </a>
+          </section>
         </div>
-      </section>
-    </>
+      </div>
+    </main>
   );
 }
