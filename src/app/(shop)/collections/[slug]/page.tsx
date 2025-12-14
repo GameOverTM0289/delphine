@@ -16,24 +16,29 @@ const categoryImages: Record<string, string> = {
 };
 
 async function getCategoryData(slug: string) {
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: {
-      products: {
-        where: { isActive: true },
-        include: {
-          images: { orderBy: { position: 'asc' } },
-          variants: true,
+  try {
+    const category = await prisma.category.findUnique({
+      where: { slug },
+      include: {
+        products: {
+          where: { isActive: true },
+          include: {
+            images: { orderBy: { position: 'asc' } },
+            variants: true,
+          },
+          orderBy: [
+            { featured: 'desc' },
+            { createdAt: 'desc' },
+          ],
         },
-        orderBy: [
-          { featured: 'desc' },
-          { createdAt: 'desc' },
-        ],
       },
-    },
-  });
+    });
 
-  return category;
+    return category;
+  } catch (error) {
+    console.error('Database error:', error);
+    return null;
+  }
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {

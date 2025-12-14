@@ -5,14 +5,19 @@ import { formatPrice, getImageUrl } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 
 async function getProducts() {
-  return prisma.product.findMany({
-    include: {
-      images: { orderBy: { position: 'asc' }, take: 1 },
-      category: true,
-      _count: { select: { variants: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  try {
+    return await prisma.product.findMany({
+      include: {
+        images: { where: { isPrimary: true }, take: 1 },
+        category: true,
+        _count: { select: { variants: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return [];
+  }
 }
 
 export default async function AdminProductsPage() {

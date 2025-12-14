@@ -1,288 +1,265 @@
-'use client';
-
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
+import HeroSlider from '@/components/home/HeroSlider';
+import ProductCard from '@/components/product/ProductCard';
+import prisma from '@/lib/db/prisma';
 
-const heroSlides = [
+export const dynamic = 'force-dynamic';
+
+const defaultSlides = [
   {
-    image: '/images/hero/slide-1.jpg',
-    fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
-    subtitle: 'Summer 2024',
-    title: 'Rhythm of a Free Spirit',
+    id: '1',
+    title: 'Summer Collection',
+    subtitle: 'New Arrivals',
     description: 'Timeless elegance meets Mediterranean spirit',
+    buttonText: 'Shop Now',
+    buttonLink: '/shop',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
   },
   {
-    image: '/images/hero/slide-2.jpg',
-    fallback: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1920&q=80',
-    subtitle: 'New Collection',
-    title: 'Coastal Dreams',
-    description: 'Discover the essence of summer',
+    id: '2',
+    title: 'Free Shipping',
+    subtitle: 'On Orders €100+',
+    description: 'Enjoy complimentary delivery on all qualifying orders',
+    buttonText: 'Shop Collection',
+    buttonLink: '/shop',
+    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80',
   },
   {
-    image: '/images/hero/slide-3.jpg',
-    fallback: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80',
-    subtitle: 'Limited Edition',
-    title: 'Azure Collection',
-    description: 'Inspired by the Adriatic Sea',
+    id: '3',
+    title: 'Sustainable Luxury',
+    subtitle: 'Eco-Conscious',
+    description: 'Crafted from recycled ocean plastics',
+    buttonText: 'Learn More',
+    buttonLink: '/sustainability',
+    image: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=1920&q=80',
   },
 ];
 
-const collections = [
-  { 
-    image: '/images/collections/bikinis.jpg',
-    fallback: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80',
-    title: 'Bikinis',
-    slug: 'bikinis',
-  },
-  { 
-    image: '/images/collections/one-pieces.jpg',
-    fallback: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=600&q=80',
-    title: 'One Pieces',
-    slug: 'one-pieces',
-  },
-];
+async function getHomeData() {
+  try {
+    const [slides, featuredProducts] = await Promise.all([
+      prisma.heroSlide.findMany({
+        where: { isActive: true },
+        orderBy: { position: 'asc' },
+      }),
+      prisma.product.findMany({
+        where: { featured: true, isActive: true },
+        include: { images: true, variants: true },
+        take: 4,
+      }),
+    ]);
 
-export default function HomePage() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    return { slides, featuredProducts };
+  } catch (error) {
+    console.error('Database error:', error);
+    return { slides: [], featuredProducts: [] };
+  }
+}
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  }, []);
+export default async function HomePage() {
+  const { slides, featuredProducts } = await getHomeData();
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 5000);
-  };
-
-  useEffect(() => {
-    if (isAutoPlaying) {
-      intervalRef.current = setInterval(nextSlide, 5000);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isAutoPlaying, nextSlide]);
-
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
-      observerRef.current?.observe(el);
-    });
-
-    return () => observerRef.current?.disconnect();
-  }, []);
+  const heroSlides = slides.length > 0 ? slides : defaultSlides;
 
   return (
-    <main>
-      {/* ===== HERO SLIDER ===== */}
-      <section className="relative h-screen min-h-[600px] overflow-hidden">
-        {heroSlides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <Image
-              src={slide.fallback}
-              alt={slide.title}
-              fill
-              priority={index === 0}
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black/25" />
+    <>
+      <HeroSlider slides={heroSlides} />
+
+      {/* Featured Products */}
+      <section className="py-20 md:py-28 bg-ivory-100">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="text-center mb-16">
+            <span className="text-xs font-medium tracking-[0.2em] uppercase text-stone-500">Curated Selection</span>
+            <h2 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mt-4">Featured Pieces</h2>
           </div>
-        ))}
-        
-        {/* Content */}
-        <div className="relative z-20 h-full flex items-center justify-center">
-          <div className="text-center text-white px-6">
-            <p 
-              key={`subtitle-${currentSlide}`}
-              className="text-xs tracking-[0.3em] uppercase mb-6 animate-fade-down"
-            >
-              {heroSlides[currentSlide].subtitle}
-            </p>
-            <h1 
-              key={`title-${currentSlide}`}
-              className="text-display text-4xl md:text-6xl lg:text-7xl font-light mb-6 animate-fade-up"
-            >
-              {heroSlides[currentSlide].title}
-            </h1>
-            <p 
-              key={`desc-${currentSlide}`}
-              className="text-sm md:text-base font-light tracking-wide mb-10 max-w-md mx-auto animate-fade-up"
-              style={{ animationDelay: '200ms' }}
-            >
-              {heroSlides[currentSlide].description}
-            </p>
+          
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-stone-500">New arrivals coming soon...</p>
+          )}
+          
+          <div className="text-center mt-14">
             <Link 
               href="/shop" 
-              className="inline-block px-10 py-4 border border-white text-white text-xs tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all duration-500 animate-fade-up"
-              style={{ animationDelay: '400ms' }}
+              className="inline-flex items-center justify-center px-10 py-4 text-xs font-medium tracking-[0.15em] uppercase border border-charcoal-700 text-charcoal-700 hover:bg-charcoal-700 hover:text-ivory-100 transition-all duration-300"
             >
-              Explore Collection
+              View All Products
             </Link>
           </div>
         </div>
-
-        {/* Slide indicators */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? 'bg-white w-8' 
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Navigation arrows - hidden on mobile */}
-        <button
-          onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
-          className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center text-white/70 hover:text-white transition-colors"
-          aria-label="Previous slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
-          className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center text-white/70 hover:text-white transition-colors"
-          aria-label="Next slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </section>
 
-      {/* ===== COLLECTION (2 categories: Bikinis & One Pieces) ===== */}
-      <section className="py-20 md:py-28 bg-cream">
-        <div className="container-main">
-          <div className="text-center mb-14 reveal-on-scroll">
-            <p className="text-caption mb-3">The Collection</p>
-            <h2 className="text-display text-3xl md:text-4xl">Curated for You</h2>
+      {/* Categories */}
+      <section className="py-20 md:py-28 bg-ivory-200">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="text-center mb-16">
+            <span className="text-xs font-medium tracking-[0.2em] uppercase text-stone-500">Shop By Category</span>
+            <h2 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mt-4">Our Collections</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
-            {collections.map((item, index) => (
-              <Link 
-                key={item.title}
-                href={`/collections/${item.slug}`}
-                className="group reveal-on-scroll"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <div className="relative aspect-[3/4] overflow-hidden mb-4">
-                  <Image
-                    src={item.fallback}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-500" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { name: 'Bikinis', slug: 'bikinis', image: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80', desc: 'Two-piece perfection' },
+              { name: 'One Pieces', slug: 'one-pieces', image: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80', desc: 'Elegant sophistication' },
+            ].map((cat) => (
+              <Link key={cat.slug} href={`/shop?category=${cat.slug}`} className="group relative aspect-[4/5] overflow-hidden">
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/70 via-charcoal-900/20 to-transparent" />
+                <div className="absolute inset-0 flex flex-col items-center justify-end p-10 text-ivory-100">
+                  <span className="text-xs tracking-[0.2em] uppercase mb-2">{cat.desc}</span>
+                  <h3 className="font-display text-3xl font-light mb-4">{cat.name}</h3>
+                  <span className="text-xs tracking-[0.15em] uppercase border-b border-ivory-100 pb-1 group-hover:border-transparent transition-colors">
+                    Explore
+                  </span>
                 </div>
-                <h3 className="text-display text-lg md:text-xl text-center tracking-wide group-hover:opacity-70 transition-opacity duration-300">
-                  {item.title}
-                </h3>
               </Link>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="text-center mt-14 reveal-on-scroll">
-            <Link href="/shop" className="btn-outline">
-              View All
-            </Link>
+      {/* Editorial Section */}
+      <section className="py-4 bg-ivory-200">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=800&q=80"
+                alt="Mediterranean lifestyle"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"
+                alt="Beach atmosphere"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-700"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== ARTISTIC PHOTOS (Loro Piana style) ===== */}
-      <section className="bg-cream">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="relative aspect-[4/5] md:aspect-auto md:h-[85vh] overflow-hidden reveal-on-scroll">
-            <Image
-              src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80"
-              alt="Mediterranean lifestyle"
-              fill
-              className="object-cover"
+      {/* Brand Values */}
+      <section className="py-20 md:py-28 bg-ivory-100">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <span className="text-xs font-medium tracking-[0.2em] uppercase text-stone-500">Our Philosophy</span>
+          <h2 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mt-4 mb-16">What We Stand For</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+            {[
+              { title: 'Sustainability', desc: 'Eco-conscious materials and ethical production for a better tomorrow.' },
+              { title: 'Quality', desc: 'Premium Italian fabrics crafted with meticulous attention to detail.' },
+              { title: 'Inclusivity', desc: 'Designs that celebrate every body, because beauty knows no size.' },
+            ].map((value) => (
+              <div key={value.title}>
+                <div className="w-12 h-px bg-stone-300 mx-auto mb-8" />
+                <h3 className="font-display text-xl text-charcoal-800 mb-4">{value.title}</h3>
+                <p className="text-sm text-stone-500 leading-relaxed">{value.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Brand Story */}
+      <section className="py-20 md:py-28 bg-ivory-200">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=800&q=80"
+                alt="Our story"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="lg:py-8">
+              <span className="text-xs font-medium tracking-[0.2em] uppercase text-stone-500">Our Story</span>
+              <h2 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mt-4 mb-8">Born by the Sea</h2>
+              <div className="space-y-6 text-stone-600 leading-relaxed">
+                <p>
+                  Delphine was born from a love of the Mediterranean—its crystal-clear waters, 
+                  sun-drenched coastlines, and timeless elegance that has inspired artists and 
+                  travelers for centuries.
+                </p>
+                <p>
+                  Our name comes from the Greek word for dolphin, symbolizing grace, 
+                  intelligence, and the pure joy of moving freely through water.
+                </p>
+                <p>
+                  Each piece is crafted to make you feel confident, comfortable, 
+                  and connected to the beauty of the sea.
+                </p>
+              </div>
+              <Link 
+                href="/about" 
+                className="inline-flex items-center justify-center px-10 py-4 mt-10 text-xs font-medium tracking-[0.15em] uppercase bg-charcoal-800 text-ivory-100 hover:bg-charcoal-900 transition-colors"
+              >
+                Discover More
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram / Social Proof */}
+      <section className="py-20 md:py-28 bg-ivory-100">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="text-center mb-12">
+            <span className="text-xs font-medium tracking-[0.2em] uppercase text-stone-500">@delphineswimwear</span>
+            <h2 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mt-4">Follow Our Journey</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {[
+              'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
+              'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=400&q=80',
+              'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=400&q=80',
+              'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&q=80',
+            ].map((img, i) => (
+              <a key={i} href="#" className="relative aspect-square overflow-hidden group">
+                <Image src={img} alt="" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-charcoal-900/0 group-hover:bg-charcoal-900/30 transition-colors flex items-center justify-center">
+                  <span className="text-ivory-100 opacity-0 group-hover:opacity-100 transition-opacity text-xs tracking-widest uppercase">View</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="py-24 bg-charcoal-800 text-ivory-100">
+        <div className="max-w-xl mx-auto px-6 text-center">
+          <h2 className="font-display text-2xl md:text-3xl font-light mb-4">Stay Connected</h2>
+          <p className="text-sm text-stone-400 mb-10">
+            Be the first to know about new collections and exclusive offers.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="flex-1 px-6 py-4 bg-transparent border border-charcoal-600 text-ivory-100 placeholder:text-stone-500 focus:outline-none focus:border-stone-400 transition-colors text-sm"
             />
-          </div>
-          <div className="relative aspect-[4/5] md:aspect-auto md:h-[85vh] overflow-hidden reveal-on-scroll" style={{ animationDelay: '200ms' }}>
-            <Image
-              src="https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=1200&q=80"
-              alt="Coastal elegance"
-              fill
-              className="object-cover"
-            />
-          </div>
+            <button type="submit" className="px-8 py-4 bg-ivory-100 text-charcoal-800 text-xs font-medium tracking-[0.15em] uppercase hover:bg-ivory-200 transition-colors">
+              Subscribe
+            </button>
+          </form>
         </div>
       </section>
-
-      {/* ===== OUR STORY ===== */}
-      <section className="py-20 md:py-28 bg-cream">
-        <div className="container-main">
-          <div className="max-w-2xl mx-auto text-center reveal-on-scroll">
-            <p className="text-caption mb-3">Our Story</p>
-            <h2 className="text-display text-3xl md:text-4xl mb-8">Born by the Sea</h2>
-            <p className="text-body leading-relaxed mb-5">
-              Delphine was born from a love of the Mediterranean—its crystal-clear waters, 
-              sun-drenched coastlines, and timeless elegance. Our name comes from the Greek 
-              word for dolphin, symbolizing grace, freedom, and the pure joy of the sea.
-            </p>
-            <p className="text-body leading-relaxed mb-10">
-              Each piece is crafted with care, designed to make you feel confident and 
-              beautiful whether you&apos;re lounging by the pool or exploring hidden coves.
-            </p>
-            <Link href="/about" className="link-underline text-xs tracking-[0.2em] uppercase">
-              Discover More
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FULL WIDTH IMAGE ===== */}
-      <section className="relative h-[60vh] min-h-[450px] overflow-hidden reveal-on-scroll">
-        <Image
-          src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1920&q=80"
-          alt="Beach sunset"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-          <div className="text-center text-white px-6">
-            <p className="text-xs tracking-[0.3em] uppercase mb-4">New Season</p>
-            <h2 className="text-display text-3xl md:text-5xl mb-8">Summer Awaits</h2>
-            <Link 
-              href="/shop" 
-              className="inline-block px-10 py-4 bg-white text-black text-xs tracking-[0.2em] uppercase hover:bg-cream transition-colors duration-500"
-            >
-              Shop Now
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
+    </>
   );
 }

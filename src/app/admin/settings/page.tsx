@@ -1,114 +1,96 @@
-'use client';
+import prisma from '@/lib/db/prisma';
 
-import { useState } from 'react';
+export const dynamic = 'force-dynamic';
 
-export default function AdminSettingsPage() {
-  const [saving, setSaving] = useState(false);
+async function getSettings() {
+  try {
+    return await prisma.siteSettings.findUnique({
+      where: { id: 'settings' },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return null;
+  }
+}
 
-  const handleSave = async () => {
-    setSaving(true);
-    // Simulate save
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSaving(false);
-  };
+export default async function AdminSettingsPage() {
+  const settings = await getSettings();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="heading-2">Settings</h1>
         <p className="text-gray-600 mt-1">Manage your store configuration</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Store Info */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium mb-6">Store Information</h2>
-          <div className="space-y-4">
+        <div className="admin-card">
+          <h2 className="heading-4 mb-6">Store Information</h2>
+          <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Store Name</label>
-              <input type="text" className="w-full border rounded-lg px-3 py-2" defaultValue="Delphine" />
+              <label className="label">Store Name</label>
+              <input type="text" className="input-field" defaultValue={settings?.siteName || 'Delphine'} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea className="w-full border rounded-lg px-3 py-2 h-24" defaultValue="Luxury swimwear from Albania" />
+              <label className="label">Description</label>
+              <textarea className="input-field h-24" defaultValue={settings?.siteDescription || ''} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-              <input type="email" className="w-full border rounded-lg px-3 py-2" defaultValue="hello@delphineswimwear.com" />
+              <label className="label">Contact Email</label>
+              <input type="email" className="input-field" defaultValue={settings?.contactEmail || ''} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input type="tel" className="w-full border rounded-lg px-3 py-2" defaultValue="+355 69 444 4818" />
+              <label className="label">Contact Phone</label>
+              <input type="text" className="input-field" defaultValue={settings?.contactPhone || ''} />
             </div>
-          </div>
-        </div>
-
-        {/* Currency & Region */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium mb-6">Currency & Region</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-              <select className="w-full border rounded-lg px-3 py-2">
-                <option value="EUR">EUR (€)</option>
-                <option value="USD">USD ($)</option>
-                <option value="ALL">ALL (Lek)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Default Country</label>
-              <select className="w-full border rounded-lg px-3 py-2">
-                <option value="AL">Albania</option>
-                <option value="XK">Kosovo</option>
-                <option value="IT">Italy</option>
-              </select>
-            </div>
-          </div>
+            <button type="submit" className="btn-primary">Save Changes</button>
+          </form>
         </div>
 
         {/* Shipping */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium mb-6">Shipping</h2>
-          <div className="space-y-4">
+        <div className="admin-card">
+          <h2 className="heading-4 mb-6">Shipping & Tax</h2>
+          <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Standard Shipping (€)</label>
-              <input type="number" step="0.01" className="w-full border rounded-lg px-3 py-2" defaultValue="8.99" />
+              <label className="label">Free Shipping Threshold (€)</label>
+              <input type="number" className="input-field" defaultValue={settings?.shippingFreeThreshold || 100} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Express Shipping (€)</label>
-              <input type="number" step="0.01" className="w-full border rounded-lg px-3 py-2" defaultValue="15.99" />
+              <label className="label">Standard Shipping Rate (€)</label>
+              <input type="number" step="0.01" className="input-field" defaultValue={settings?.shippingStandardRate || 8.99} />
             </div>
-          </div>
+            <div>
+              <label className="label">Express Shipping Rate (€)</label>
+              <input type="number" step="0.01" className="input-field" defaultValue={settings?.shippingExpressRate || 15.99} />
+            </div>
+            <div>
+              <label className="label">Tax Rate (%)</label>
+              <input type="number" step="0.01" className="input-field" defaultValue={(settings?.taxRate || 0.20) * 100} />
+            </div>
+            <button type="submit" className="btn-primary">Save Changes</button>
+          </form>
         </div>
 
-        {/* Social */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium mb-6">Social Media</h2>
-          <div className="space-y-4">
+        {/* Social Links */}
+        <div className="admin-card">
+          <h2 className="heading-4 mb-6">Social Media</h2>
+          <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
-              <input type="text" className="w-full border rounded-lg px-3 py-2" placeholder="@delphineswimwear" />
+              <label className="label">Instagram URL</label>
+              <input type="url" className="input-field" defaultValue={settings?.socialInstagram || ''} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Facebook</label>
-              <input type="text" className="w-full border rounded-lg px-3 py-2" placeholder="facebook.com/delphine" />
+              <label className="label">Facebook URL</label>
+              <input type="url" className="input-field" defaultValue={settings?.socialFacebook || ''} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">TikTok</label>
-              <input type="text" className="w-full border rounded-lg px-3 py-2" placeholder="@delphineswimwear" />
+              <label className="label">TikTok URL</label>
+              <input type="url" className="input-field" defaultValue={settings?.socialTiktok || ''} />
             </div>
-          </div>
+            <button type="submit" className="btn-primary">Save Changes</button>
+          </form>
         </div>
-      </div>
-
-      <div className="flex justify-end">
-        <button 
-          onClick={handleSave}
-          disabled={saving}
-          className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50"
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
       </div>
     </div>
   );

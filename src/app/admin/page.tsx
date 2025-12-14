@@ -5,43 +5,52 @@ import { formatPrice, formatDate } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 
 async function getDashboardData() {
-  const [
-    totalProducts,
-    totalOrders,
-    totalCustomers,
-    totalRevenue,
-    recentOrders,
-    topProducts,
-  ] = await Promise.all([
-    prisma.product.count({ where: { isActive: true } }),
-    prisma.order.count(),
-    prisma.user.count({ where: { role: 'USER' } }),
-    prisma.order.aggregate({
-      _sum: { total: true },
-      where: { paymentStatus: 'PAID' },
-    }),
-    prisma.order.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: { user: true },
-    }),
-    prisma.product.findMany({
-      take: 5,
-      where: { isActive: true },
-      orderBy: { stockQuantity: 'desc' },
-    }),
-  ]);
+  try {
+    const [
+      totalProducts,
+      totalOrders,
+      totalCustomers,
+      totalRevenue,
+      recentOrders,
+      topProducts,
+    ] = await Promise.all([
+      prisma.product.count({ where: { isActive: true } }),
+      prisma.order.count(),
+      prisma.user.count({ where: { role: 'CUSTOMER' } }),
+      prisma.order.aggregate({
+        _sum: { total: true },
+        where: { paymentStatus: 'PAID' },
+      }),
+      prisma.order.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: { user: true },
+      }),
+      prisma.product.findMany({
+        take: 5,
+        where: { isActive: true },
+        orderBy: { stockQuantity: 'desc' },
+      }),
+    ]);
 
-  return {
-    stats: {
-      products: totalProducts,
-      orders: totalOrders,
-      customers: totalCustomers,
-      revenue: totalRevenue._sum.total || 0,
-    },
-    recentOrders,
-    topProducts,
-  };
+    return {
+      stats: {
+        products: totalProducts,
+        orders: totalOrders,
+        customers: totalCustomers,
+        revenue: totalRevenue._sum.total || 0,
+      },
+      recentOrders,
+      topProducts,
+    };
+  } catch (error) {
+    console.error('Database error:', error);
+    return {
+      stats: { products: 0, orders: 0, customers: 0, revenue: 0 },
+      recentOrders: [],
+      topProducts: [],
+    };
+  }
 }
 
 export default async function AdminDashboard() {

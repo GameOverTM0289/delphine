@@ -1,158 +1,103 @@
 export default function SizeGuidePage() {
   return (
-    <main className="min-h-screen bg-cream pt-28 pb-20">
-      <div className="container-main max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-display text-3xl md:text-4xl mb-4">Size Guide</h1>
-          <p className="text-body max-w-lg mx-auto">
+    <>
+      <section className="bg-cream-50 pt-32 pb-16">
+        <div className="container-custom text-center">
+          <h1 className="heading-1 mb-4">Size Guide</h1>
+          <p className="body-text-lg text-gray-600 max-w-xl mx-auto">
             Find your perfect fit with our comprehensive size guide.
           </p>
         </div>
+      </section>
 
-        {/* How to Measure */}
-        <section className="mb-16">
-          <h2 className="text-display text-xl mb-8 text-center">How to Measure</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6 bg-white">
-              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center border border-charcoal-200 rounded-full">
-                <span className="text-display text-lg">1</span>
-              </div>
-              <h3 className="text-sm font-medium mb-2">Bust</h3>
-              <p className="text-body text-sm">
-                Measure around the fullest part of your bust, keeping the tape horizontal.
-              </p>
-            </div>
-            <div className="text-center p-6 bg-white">
-              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center border border-charcoal-200 rounded-full">
-                <span className="text-display text-lg">2</span>
-              </div>
-              <h3 className="text-sm font-medium mb-2">Waist</h3>
-              <p className="text-body text-sm">
-                Measure around the narrowest part of your waist, usually just above the navel.
-              </p>
-            </div>
-            <div className="text-center p-6 bg-white">
-              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center border border-charcoal-200 rounded-full">
-                <span className="text-display text-lg">3</span>
-              </div>
-              <h3 className="text-sm font-medium mb-2">Hips</h3>
-              <p className="text-body text-sm">
-                Measure around the fullest part of your hips, approximately 20cm below waist.
-              </p>
+      <section className="section">
+        <div className="container-narrow">
+          {/* Size Chart */}
+          <div className="mb-12">
+            <h2 className="heading-3 mb-6">Size Chart</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse bg-white">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="py-4 px-6 text-left font-medium border-b">Size</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">EU</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">UK</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">US</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">Bust (cm)</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">Waist (cm)</th>
+                    <th className="py-4 px-6 text-left font-medium border-b">Hips (cm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="py-4 px-6 font-medium">S</td>
+                    <td className="py-4 px-6">34-36</td>
+                    <td className="py-4 px-6">6-8</td>
+                    <td className="py-4 px-6">2-4</td>
+                    <td className="py-4 px-6">82-86</td>
+                    <td className="py-4 px-6">62-66</td>
+                    <td className="py-4 px-6">88-92</td>
+                  </tr>
+                  <tr className="border-b bg-gray-50">
+                    <td className="py-4 px-6 font-medium">M</td>
+                    <td className="py-4 px-6">38-40</td>
+                    <td className="py-4 px-6">10-12</td>
+                    <td className="py-4 px-6">6-8</td>
+                    <td className="py-4 px-6">86-90</td>
+                    <td className="py-4 px-6">66-70</td>
+                    <td className="py-4 px-6">92-96</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-4 px-6 font-medium">L</td>
+                    <td className="py-4 px-6">42-44</td>
+                    <td className="py-4 px-6">14-16</td>
+                    <td className="py-4 px-6">10-12</td>
+                    <td className="py-4 px-6">90-94</td>
+                    <td className="py-4 px-6">70-74</td>
+                    <td className="py-4 px-6">96-100</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-        </section>
 
-        {/* Size Chart */}
-        <section className="mb-16">
-          <h2 className="text-display text-xl mb-8 text-center">Size Chart</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white">
-              <thead>
-                <tr className="border-b border-charcoal-200">
-                  <th className="py-4 px-6 text-left text-xs tracking-wider uppercase text-charcoal-500 font-medium">Size</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">EU</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">UK</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">US</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">Bust (cm)</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">Waist (cm)</th>
-                  <th className="py-4 px-6 text-center text-xs tracking-wider uppercase text-charcoal-500 font-medium">Hips (cm)</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                <tr className="border-b border-charcoal-100">
-                  <td className="py-4 px-6 font-medium">XS</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">34</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">6</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">2</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">80-84</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">60-64</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">86-90</td>
-                </tr>
-                <tr className="border-b border-charcoal-100">
-                  <td className="py-4 px-6 font-medium">S</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">36</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">8</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">4</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">84-88</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">64-68</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">90-94</td>
-                </tr>
-                <tr className="border-b border-charcoal-100">
-                  <td className="py-4 px-6 font-medium">M</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">38</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">10</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">6</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">88-92</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">68-72</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">94-98</td>
-                </tr>
-                <tr className="border-b border-charcoal-100">
-                  <td className="py-4 px-6 font-medium">L</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">40</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">12</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">8</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">92-96</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">72-76</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">98-102</td>
-                </tr>
-                <tr>
-                  <td className="py-4 px-6 font-medium">XL</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">42</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">14</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">10</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">96-100</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">76-80</td>
-                  <td className="py-4 px-6 text-center text-charcoal-600">102-106</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Tips */}
-        <section className="mb-16">
-          <h2 className="text-display text-xl mb-8 text-center">Fit Tips</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 bg-white">
-              <h3 className="text-sm font-medium mb-3">Between Sizes?</h3>
-              <p className="text-body text-sm">
-                If you&apos;re between sizes, we recommend sizing up for a more relaxed fit or down for a more supportive fit.
-              </p>
-            </div>
-            <div className="p-6 bg-white">
-              <h3 className="text-sm font-medium mb-3">First Time Buyer?</h3>
-              <p className="text-body text-sm">
-                Our swimwear is designed to fit true to size. We recommend choosing your regular size.
-              </p>
-            </div>
-            <div className="p-6 bg-white">
-              <h3 className="text-sm font-medium mb-3">Adjustable Features</h3>
-              <p className="text-body text-sm">
-                Many of our styles feature adjustable straps and ties for a customizable fit.
-              </p>
-            </div>
-            <div className="p-6 bg-white">
-              <h3 className="text-sm font-medium mb-3">Need Help?</h3>
-              <p className="text-body text-sm">
-                Contact our team at hello@delphineswimwear.com for personalized sizing advice.
-              </p>
+          {/* How to Measure */}
+          <div className="mb-12">
+            <h2 className="heading-3 mb-6">How to Measure</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <h3 className="font-medium mb-2">Bust</h3>
+                <p className="text-sm text-gray-600">
+                  Measure around the fullest part of your bust, keeping the tape parallel to the floor.
+                </p>
+              </div>
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <h3 className="font-medium mb-2">Waist</h3>
+                <p className="text-sm text-gray-600">
+                  Measure around the narrowest part of your natural waist, usually just above the belly button.
+                </p>
+              </div>
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <h3 className="font-medium mb-2">Hips</h3>
+                <p className="text-sm text-gray-600">
+                  Measure around the fullest part of your hips, keeping the tape parallel to the floor.
+                </p>
+              </div>
             </div>
           </div>
-        </section>
 
-        {/* CTA */}
-        <div className="text-center">
-          <p className="text-body mb-6">Still have questions about sizing?</p>
-          <a 
-            href="mailto:hello@delphineswimwear.com" 
-            className="btn-outline"
-          >
-            Contact Us
-          </a>
+          {/* Tips */}
+          <div className="bg-ocean-50 p-6 rounded-lg">
+            <h3 className="font-medium mb-4">Fit Tips</h3>
+            <ul className="space-y-2 text-sm text-ocean-800">
+              <li>• If you&apos;re between sizes, we recommend sizing up for a more comfortable fit.</li>
+              <li>• Our swimwear has a snug fit that will relax slightly when wet.</li>
+              <li>• For bikinis, you can mix and match top and bottom sizes.</li>
+              <li>• Still unsure? Contact us for personalized sizing advice.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+    </>
   );
 }

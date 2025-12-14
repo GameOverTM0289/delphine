@@ -1,317 +1,252 @@
-# Delphine - Luxury Swimwear E-commerce
+# 🌊 Delphine Swimwear - Full E-Commerce Platform
 
-## 🚀 Quick Start
+A complete Next.js 14 e-commerce platform with PostgreSQL database, authentication, admin dashboard, and beautiful Mediterranean-inspired design.
+
+## ✨ Features
+
+- **🛒 Full E-commerce**: Products, cart, checkout
+- **👤 User Authentication**: Register, login, account management
+- **👑 Admin Dashboard**: Manage products, orders, customers, hero slides, settings
+- **🎨 Beautiful Design**: Stunning hero slider, animations, responsive
+- **🗄️ PostgreSQL Database**: Full Prisma ORM integration
+- **📱 Mobile First**: Fully responsive design
+
+## 🚀 Quick Start (5 Minutes)
+
+### Step 1: Get a Free PostgreSQL Database
+
+Go to **[neon.tech](https://neon.tech)** (free tier):
+1. Sign up → Create Project
+2. Copy your connection string (looks like: `postgresql://user:pass@host/db?sslmode=require`)
+
+### Step 2: Setup Environment
 
 ```bash
-npm install
+# Copy the example env file
 cp .env.example .env
-# Edit .env with your credentials
-npx prisma generate
-npx prisma db push
-npx prisma db seed
-npm run dev
-```
 
----
-
-## 📦 COMPLETE SETUP GUIDE
-
-### Step 1: Install Dependencies
-
-```bash
-npm install
-```
-
-### Step 2: Setup PostgreSQL Database
-
-**Option A: Local PostgreSQL**
-
-1. Install PostgreSQL: https://www.postgresql.org/download/
-2. Create database:
-```bash
-psql -U postgres
-CREATE DATABASE delphine;
-\q
-```
-3. Update `.env`:
-```env
-DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/delphine?schema=public"
-```
-
-**Option B: Cloud PostgreSQL (Recommended)**
-
-Use one of these free/cheap options:
-
-| Provider | Free Tier | URL |
-|----------|-----------|-----|
-| **Neon** | 0.5GB free | https://neon.tech |
-| **Supabase** | 500MB free | https://supabase.com |
-| **Railway** | $5 credit | https://railway.app |
-| **Vercel Postgres** | 256MB free | https://vercel.com/storage/postgres |
-
-Copy the connection string to `.env`:
-```env
-DATABASE_URL="postgresql://user:pass@host:5432/database?sslmode=require"
-```
-
-### Step 3: Setup Environment Variables
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-```env
-# Database
-DATABASE_URL="postgresql://..."
-
-# Auth (generate a random string)
-NEXTAUTH_SECRET="run: openssl rand -base64 32"
+# Edit .env and add your database URL
+DATABASE_URL="postgresql://YOUR_CONNECTION_STRING_HERE"
+NEXTAUTH_SECRET="run-this-command-below-to-generate"
 NEXTAUTH_URL="http://localhost:3000"
-
-# POK Payment (get from merchant.pokpay.io)
-POK_API_URL="https://api-staging.pokpay.io"
-POK_KEY_ID="your-key-id"
-POK_KEY_SECRET="your-key-secret"
-POK_MERCHANT_ID="your-merchant-id"
 ```
 
-### Step 4: Initialize Database
+Generate secret:
+```bash
+openssl rand -base64 32
+```
+
+### Step 3: Install & Setup Database
 
 ```bash
-npx prisma generate
-npx prisma db push
-npx prisma db seed
+# Install dependencies
+npm install
+
+# Push schema to database
+npm run db:push
+
+# Seed with sample data
+npm run db:seed
 ```
 
-### Step 5: Run Development Server
+### Step 4: Run!
 
 ```bash
 npm run dev
 ```
 
-Visit: http://localhost:3000
+Visit: **http://localhost:3000**
 
 ---
 
-## 💳 POK PAYMENT SETUP
+## 🔐 Demo Accounts
 
-### 1. Create POK Merchant Account
-
-1. Go to https://merchant.pokpay.io/
-2. Register for a merchant account
-3. Complete verification
-
-### 2. Get API Credentials
-
-In POK Merchant Dashboard:
-1. Go to Settings → API Keys
-2. Create new SDK Key
-3. Copy:
-   - Key ID
-   - Key Secret
-   - Merchant ID
-
-### 3. Configure Environment
-
-For **Staging** (testing):
-```env
-POK_API_URL="https://api-staging.pokpay.io"
-POK_KEY_ID="your-staging-key-id"
-POK_KEY_SECRET="your-staging-key-secret"
-POK_MERCHANT_ID="your-merchant-id"
-```
-
-For **Production** (live):
-```env
-POK_API_URL="https://api.pokpay.io"
-POK_KEY_ID="your-production-key-id"
-POK_KEY_SECRET="your-production-key-secret"
-POK_MERCHANT_ID="your-merchant-id"
-```
-
-### 4. Setup Webhook
-
-In POK Dashboard:
-1. Go to Settings → Webhooks
-2. Add webhook URL: `https://yourdomain.com/api/webhooks/pok`
-3. Select events: `payment.completed`, `payment.failed`
+After seeding:
+- **Admin**: admin@delphine.com / admin123
+- **Customer**: test@example.com / test123
 
 ---
 
-## 🖼️ ADD YOUR IMAGES
+## 📸 EASY IMAGE SYSTEM
 
-### Folder Structure
+### Adding Your Own Images
+
+Images can be added in two ways:
+
+#### Option 1: Local Images (Recommended)
+
+Put your images in the `public/images/` folder:
 
 ```
 public/
-├── logo.png              ← Your full logo (transparent PNG)
-├── icon.png              ← Icon only (transparent PNG)
-│
-└── images/
-    ├── hero/
-    │   ├── slide-1.jpg   ← 1920x1080px
-    │   ├── slide-2.jpg
-    │   └── slide-3.jpg
-    │
-    ├── collections/
-    │   ├── bikinis.jpg   ← 600x800px
-    │   └── one-pieces.jpg
-    │
-    └── products/
-        ├── riviera-bikini-set-1.jpg    ← 800x1066px
-        ├── riviera-bikini-set-2.jpg
-        ├── santorini-bandeau-set-1.jpg
-        ├── santorini-bandeau-set-2.jpg
-        ├── capri-sport-bikini-1.jpg
-        ├── capri-sport-bikini-2.jpg
-        ├── aegean-one-piece-1.jpg
-        ├── aegean-one-piece-2.jpg
-        ├── amalfi-plunge-one-piece-1.jpg
-        └── amalfi-plunge-one-piece-2.jpg
+  images/
+    hero/
+      slide-1.jpg    (1920x1080 or larger)
+      slide-2.jpg
+      slide-3.jpg
+    products/
+      product-slug-1.jpg   (800x1000)
+      product-slug-2.jpg
+    categories/
+      bikinis.jpg    (800x800)
+      one-pieces.jpg
+    collections/
+      summer-2024.jpg  (1200x800)
 ```
 
-### Image Sizes
+Then reference them in the database as `/images/hero/slide-1.jpg`
+
+#### Option 2: External URLs
+
+Use any image URL (Unsplash, Cloudinary, etc.):
+- Just paste the full URL in the admin panel or database
+
+### Image Naming Convention
+
+For products:
+- `{product-slug}-1.jpg` - Primary image
+- `{product-slug}-2.jpg` - Secondary image
+- etc.
+
+Example: For a product with slug "riviera-bikini-set":
+- `riviera-bikini-set-1.jpg`
+- `riviera-bikini-set-2.jpg`
+
+### Recommended Image Sizes
 
 | Type | Size | Format |
 |------|------|--------|
-| Hero Slider | 1920×1080px | JPG |
-| Collection | 600×800px | JPG |
-| Product | 800×1066px | JPG |
-| Logo | Any | PNG (transparent) |
-| Icon | 200×200px+ | PNG (transparent) |
+| Hero Slides | 1920x1080 | JPG |
+| Product Images | 800x1000 | JPG |
+| Category Images | 800x800 | JPG |
+| Collection Images | 1200x800 | JPG |
 
 ---
 
-## 🎨 Brand Colors
+## 🌐 Deploy to Netlify
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| White | `#ffffff` | Backgrounds |
-| Black | `#000000` | Text, buttons |
-| Slate Blue | `#546d9d` | Accents |
-| Cream | `#f1efe7` | Main background |
+### Option A: GitHub + Netlify (Recommended)
+
+1. Push to GitHub:
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/delphine-swimwear.git
+git push -u origin master
+```
+
+2. Go to [Netlify](https://netlify.com):
+   - "Add new site" → "Import from Git"
+   - Select your repo
+   - Add environment variables:
+     - `DATABASE_URL` = your Neon connection string
+     - `NEXTAUTH_SECRET` = your generated secret
+     - `NEXTAUTH_URL` = https://your-site.netlify.app
+   - Deploy!
+
+### Option B: Netlify CLI
+
+```bash
+npm install -g netlify-cli
+netlify login
+netlify init
+netlify env:set DATABASE_URL "your-connection-string"
+netlify env:set NEXTAUTH_SECRET "your-secret"
+netlify deploy --prod
+```
 
 ---
 
-## 👤 Admin Access
+## 🗄️ Database Commands
 
-After seeding:
-- **Email:** admin@delphine.com
-- **Password:** admin123
-- **URL:** http://localhost:3000/admin
+```bash
+# View database in browser
+npm run db:studio
 
----
+# Reset and reseed database
+npm run db:push
+npm run db:seed
 
-## 🚀 Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push code to GitHub
-2. Go to vercel.com
-3. Import your repository
-4. Add environment variables:
-   - `DATABASE_URL`
-   - `NEXTAUTH_SECRET`
-   - `NEXTAUTH_URL` (your vercel domain)
-   - `POK_API_URL`
-   - `POK_KEY_ID`
-   - `POK_KEY_SECRET`
-   - `POK_MERCHANT_ID`
-5. Deploy!
-
-### Deploy to Netlify
-
-1. Build command: `npm run build`
-2. Publish directory: `.next`
-3. Add environment variables
-4. Deploy!
+# Generate Prisma client after schema changes
+npx prisma generate
+```
 
 ---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/
-│   ├── (shop)/          ← Public pages
-│   │   ├── page.tsx     ← Homepage
-│   │   ├── shop/        ← Shop page
-│   │   ├── products/    ← Product pages
-│   │   ├── checkout/    ← Checkout + success
-│   │   └── ...
-│   ├── admin/           ← Admin dashboard
-│   └── api/             ← API routes
-│       ├── checkout/    ← Checkout API
-│       └── webhooks/pok ← POK webhook
-├── components/
-│   ├── layout/          ← Header, Footer
-│   ├── cart/            ← Cart drawer
-│   └── ...
-├── lib/
-│   ├── db/prisma.ts     ← Database client
-│   ├── store/           ← Zustand stores
-│   └── utils.ts         ← Helpers
-└── prisma/
-    ├── schema.prisma    ← Database schema
-    └── seed.ts          ← Seed data
+├── prisma/
+│   ├── schema.prisma    # Database schema
+│   └── seed.ts          # Sample data
+├── public/
+│   └── images/          # Your images go here!
+├── src/
+│   ├── app/
+│   │   ├── (auth)/      # Login, register pages
+│   │   ├── (shop)/      # Store pages
+│   │   ├── admin/       # Admin dashboard
+│   │   └── api/         # API routes
+│   ├── components/      # React components
+│   └── lib/             # Utilities, database, store
+├── .env.example         # Environment template
+├── netlify.toml         # Netlify config
+└── package.json
 ```
 
 ---
 
-## 📦 Products (5 Total)
+## 🛠️ Admin Dashboard
 
-**Bikinis (3):**
-1. Riviera Bikini Set - €89
-2. Santorini Bandeau Set - €95
-3. Capri Sport Bikini - €85
+Access at `/admin` (login with admin account)
 
-**One Pieces (2):**
-4. Aegean One Piece - €120
-5. Amalfi Plunge One Piece - €135
+Features:
+- **Dashboard**: Overview stats
+- **Products**: Add/edit/delete products
+- **Orders**: View and manage orders
+- **Customers**: View customer list
+- **Hero Slides**: Manage homepage slider
+- **Settings**: Store configuration
 
 ---
 
-## 🔧 Common Commands
+## 🎨 Customization
 
-```bash
-# Development
-npm run dev
+### Colors
 
-# Build for production
-npm run build
-
-# Database commands
-npx prisma studio      # Visual database editor
-npx prisma db push     # Push schema changes
-npx prisma db seed     # Run seed
-npx prisma migrate dev # Create migration
-
-# Generate Prisma client
-npx prisma generate
+Edit `tailwind.config.ts`:
+```ts
+colors: {
+  cream: { ... },
+  ocean: { ... },
+  coral: { ... },
+}
 ```
 
----
+### Brand
 
-## ❓ Troubleshooting
-
-### Database connection error
-- Check `DATABASE_URL` in `.env`
-- Ensure PostgreSQL is running
-- For cloud DB, check if IP is whitelisted
-
-### POK payment not working
-- Verify API credentials in `.env`
-- Use staging URL for testing
-- Check webhook URL is accessible
-
-### Images not showing
-- Place images in correct folders
-- Use exact filenames from README
-- Check file extensions (lowercase .jpg/.png)
+Update in:
+- `src/app/layout.tsx` - Site title/description
+- `src/components/layout/Header.tsx` - Logo
+- `src/components/layout/Footer.tsx` - Footer content
+- `prisma/seed.ts` - Default settings
 
 ---
 
 ## 📞 Support
 
-Email: hello@delphineswimwear.com
+Having issues? Check:
+1. Database connection string is correct
+2. `npm run db:push` completed successfully
+3. Environment variables are set in Netlify
+
+---
+
+## 📄 License
+
+MIT License - Free for personal and commercial use.
+
+---
+
+Built with ❤️ using Next.js 14, Prisma, PostgreSQL, and Tailwind CSS.

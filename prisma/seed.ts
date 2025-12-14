@@ -1,235 +1,347 @@
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting seed...');
 
+  // Clean existing data
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.productVariant.deleteMany();
+  await prisma.productImage.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.collection.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.heroSlide.deleteMany();
+  await prisma.user.deleteMany();
+
   // Create admin user
-  const adminPassword = await hash('admin123', 12);
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@delphine.com' },
-    update: {},
-    create: {
+  const adminPassword = await bcrypt.hash('admin123', 12);
+  await prisma.user.create({
+    data: {
       email: 'admin@delphine.com',
-      name: 'Admin',
       password: adminPassword,
+      firstName: 'Admin',
+      lastName: 'User',
       role: 'ADMIN',
     },
   });
-  console.log('✓ Admin user created:', admin.email);
 
-  // Create categories
-  const bikinis = await prisma.category.upsert({
-    where: { slug: 'bikinis' },
-    update: {},
-    create: {
-      name: 'Bikinis',
-      slug: 'bikinis',
-      description: 'Beautiful bikini sets for every style',
+  // Create test user
+  const testPassword = await bcrypt.hash('test123', 12);
+  await prisma.user.create({
+    data: {
+      email: 'test@example.com',
+      password: testPassword,
+      firstName: 'Test',
+      lastName: 'User',
+      role: 'CUSTOMER',
     },
   });
 
-  const onePieces = await prisma.category.upsert({
-    where: { slug: 'one-pieces' },
-    update: {},
-    create: {
+  console.log('✅ Users created');
+
+  // Create categories
+  const bikinis = await prisma.category.create({
+    data: {
+      name: 'Bikinis',
+      slug: 'bikinis',
+      description: 'Two-piece swimwear for the modern woman',
+      image: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80',
+    },
+  });
+
+  const onePieces = await prisma.category.create({
+    data: {
       name: 'One Pieces',
       slug: 'one-pieces',
       description: 'Elegant one-piece swimsuits',
+      image: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80',
     },
   });
-  console.log('✓ Categories created');
 
-  // Products data - 3 Bikinis + 2 One Pieces = 5 total
-  const productsData = [
-    // BIKINIS (3)
-    {
-      name: 'Riviera Bikini Set',
-      slug: 'riviera-bikini-set',
-      description: 'A classic triangle bikini in luxurious Italian fabric. Features adjustable ties and gold-tone hardware. Perfect for sun-soaked days by the Mediterranean.',
-      price: 89.00,
-      categoryId: bikinis.id,
-      images: [
-        { url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80', alt: 'Riviera Bikini Set', position: 0 },
-        { url: 'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=800&q=80', alt: 'Riviera Bikini Set Back', position: 1 },
-      ],
-      variants: [
-        { size: 'XS', color: 'Black', colorHex: '#000000', sku: 'RIV-BLK-XS', price: 89.00, stockQuantity: 10 },
-        { size: 'S', color: 'Black', colorHex: '#000000', sku: 'RIV-BLK-S', price: 89.00, stockQuantity: 15 },
-        { size: 'M', color: 'Black', colorHex: '#000000', sku: 'RIV-BLK-M', price: 89.00, stockQuantity: 12 },
-        { size: 'L', color: 'Black', colorHex: '#000000', sku: 'RIV-BLK-L', price: 89.00, stockQuantity: 8 },
-        { size: 'XS', color: 'White', colorHex: '#FFFFFF', sku: 'RIV-WHT-XS', price: 89.00, stockQuantity: 10 },
-        { size: 'S', color: 'White', colorHex: '#FFFFFF', sku: 'RIV-WHT-S', price: 89.00, stockQuantity: 14 },
-        { size: 'M', color: 'White', colorHex: '#FFFFFF', sku: 'RIV-WHT-M', price: 89.00, stockQuantity: 11 },
-        { size: 'L', color: 'White', colorHex: '#FFFFFF', sku: 'RIV-WHT-L', price: 89.00, stockQuantity: 7 },
-      ],
-    },
-    {
-      name: 'Santorini Bandeau Set',
-      slug: 'santorini-bandeau-set',
-      description: 'Elegant bandeau bikini with removable straps. Made from recycled ocean plastic with UPF 50+ protection. Inspired by the white and blue of Santorini.',
-      price: 95.00,
-      categoryId: bikinis.id,
-      images: [
-        { url: 'https://images.unsplash.com/photo-1594046243098-0fceea9d451e?w=800&q=80', alt: 'Santorini Bandeau Set', position: 0 },
-        { url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80', alt: 'Santorini Bandeau Set Back', position: 1 },
-      ],
-      variants: [
-        { size: 'XS', color: 'Ocean Blue', colorHex: '#546d9d', sku: 'SAN-BLU-XS', price: 95.00, stockQuantity: 8 },
-        { size: 'S', color: 'Ocean Blue', colorHex: '#546d9d', sku: 'SAN-BLU-S', price: 95.00, stockQuantity: 12 },
-        { size: 'M', color: 'Ocean Blue', colorHex: '#546d9d', sku: 'SAN-BLU-M', price: 95.00, stockQuantity: 10 },
-        { size: 'L', color: 'Ocean Blue', colorHex: '#546d9d', sku: 'SAN-BLU-L', price: 95.00, stockQuantity: 6 },
-        { size: 'XS', color: 'Cream', colorHex: '#f1efe7', sku: 'SAN-CRM-XS', price: 95.00, stockQuantity: 9 },
-        { size: 'S', color: 'Cream', colorHex: '#f1efe7', sku: 'SAN-CRM-S', price: 95.00, stockQuantity: 11 },
-        { size: 'M', color: 'Cream', colorHex: '#f1efe7', sku: 'SAN-CRM-M', price: 95.00, stockQuantity: 8 },
-        { size: 'L', color: 'Cream', colorHex: '#f1efe7', sku: 'SAN-CRM-L', price: 95.00, stockQuantity: 5 },
-      ],
-    },
-    {
-      name: 'Capri Sport Bikini',
-      slug: 'capri-sport-bikini',
-      description: 'Sporty yet feminine bikini with a supportive crop top design. Quick-dry fabric perfect for active beach days. Features a comfortable wide band.',
-      price: 85.00,
-      categoryId: bikinis.id,
-      images: [
-        { url: 'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=800&q=80', alt: 'Capri Sport Bikini', position: 0 },
-        { url: 'https://images.unsplash.com/photo-1594046243098-0fceea9d451e?w=800&q=80', alt: 'Capri Sport Bikini Back', position: 1 },
-      ],
-      variants: [
-        { size: 'XS', color: 'Coral', colorHex: '#E8927C', sku: 'CAP-CRL-XS', price: 85.00, stockQuantity: 7 },
-        { size: 'S', color: 'Coral', colorHex: '#E8927C', sku: 'CAP-CRL-S', price: 85.00, stockQuantity: 13 },
-        { size: 'M', color: 'Coral', colorHex: '#E8927C', sku: 'CAP-CRL-M', price: 85.00, stockQuantity: 11 },
-        { size: 'L', color: 'Coral', colorHex: '#E8927C', sku: 'CAP-CRL-L', price: 85.00, stockQuantity: 6 },
-        { size: 'XS', color: 'Black', colorHex: '#000000', sku: 'CAP-BLK-XS', price: 85.00, stockQuantity: 8 },
-        { size: 'S', color: 'Black', colorHex: '#000000', sku: 'CAP-BLK-S', price: 85.00, stockQuantity: 14 },
-        { size: 'M', color: 'Black', colorHex: '#000000', sku: 'CAP-BLK-M', price: 85.00, stockQuantity: 10 },
-        { size: 'L', color: 'Black', colorHex: '#000000', sku: 'CAP-BLK-L', price: 85.00, stockQuantity: 5 },
-      ],
-    },
-    // ONE PIECES (2)
-    {
-      name: 'Aegean One Piece',
-      slug: 'aegean-one-piece',
-      description: 'Sophisticated one-piece with a flattering square neckline and low back. Made from sustainable fabric that shapes and supports. A timeless silhouette.',
-      price: 120.00,
-      categoryId: onePieces.id,
-      images: [
-        { url: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80', alt: 'Aegean One Piece', position: 0 },
-        { url: 'https://images.unsplash.com/photo-1584374232938-8ba5e6ee5365?w=800&q=80', alt: 'Aegean One Piece Back', position: 1 },
-      ],
-      variants: [
-        { size: 'XS', color: 'Navy', colorHex: '#1a1a2e', sku: 'AEG-NVY-XS', price: 120.00, stockQuantity: 6 },
-        { size: 'S', color: 'Navy', colorHex: '#1a1a2e', sku: 'AEG-NVY-S', price: 120.00, stockQuantity: 10 },
-        { size: 'M', color: 'Navy', colorHex: '#1a1a2e', sku: 'AEG-NVY-M', price: 120.00, stockQuantity: 9 },
-        { size: 'L', color: 'Navy', colorHex: '#1a1a2e', sku: 'AEG-NVY-L', price: 120.00, stockQuantity: 5 },
-        { size: 'XL', color: 'Navy', colorHex: '#1a1a2e', sku: 'AEG-NVY-XL', price: 120.00, stockQuantity: 4 },
-        { size: 'XS', color: 'Olive', colorHex: '#5c6b4d', sku: 'AEG-OLV-XS', price: 120.00, stockQuantity: 5 },
-        { size: 'S', color: 'Olive', colorHex: '#5c6b4d', sku: 'AEG-OLV-S', price: 120.00, stockQuantity: 8 },
-        { size: 'M', color: 'Olive', colorHex: '#5c6b4d', sku: 'AEG-OLV-M', price: 120.00, stockQuantity: 7 },
-        { size: 'L', color: 'Olive', colorHex: '#5c6b4d', sku: 'AEG-OLV-L', price: 120.00, stockQuantity: 4 },
-        { size: 'XL', color: 'Olive', colorHex: '#5c6b4d', sku: 'AEG-OLV-XL', price: 120.00, stockQuantity: 3 },
-      ],
-    },
-    {
-      name: 'Amalfi Plunge One Piece',
-      slug: 'amalfi-plunge-one-piece',
-      description: 'Bold and elegant with a deep V-neckline and high-cut legs. Features a stunning back detail with gold ring accent. For the confident woman.',
-      price: 135.00,
-      categoryId: onePieces.id,
-      images: [
-        { url: 'https://images.unsplash.com/photo-1584374232938-8ba5e6ee5365?w=800&q=80', alt: 'Amalfi Plunge One Piece', position: 0 },
-        { url: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80', alt: 'Amalfi Plunge One Piece Back', position: 1 },
-      ],
-      variants: [
-        { size: 'XS', color: 'Black', colorHex: '#000000', sku: 'AML-BLK-XS', price: 135.00, stockQuantity: 5 },
-        { size: 'S', color: 'Black', colorHex: '#000000', sku: 'AML-BLK-S', price: 135.00, stockQuantity: 9 },
-        { size: 'M', color: 'Black', colorHex: '#000000', sku: 'AML-BLK-M', price: 135.00, stockQuantity: 8 },
-        { size: 'L', color: 'Black', colorHex: '#000000', sku: 'AML-BLK-L', price: 135.00, stockQuantity: 4 },
-        { size: 'XL', color: 'Black', colorHex: '#000000', sku: 'AML-BLK-XL', price: 135.00, stockQuantity: 3 },
-        { size: 'XS', color: 'Burgundy', colorHex: '#722F37', sku: 'AML-BRG-XS', price: 135.00, stockQuantity: 4 },
-        { size: 'S', color: 'Burgundy', colorHex: '#722F37', sku: 'AML-BRG-S', price: 135.00, stockQuantity: 7 },
-        { size: 'M', color: 'Burgundy', colorHex: '#722F37', sku: 'AML-BRG-M', price: 135.00, stockQuantity: 6 },
-        { size: 'L', color: 'Burgundy', colorHex: '#722F37', sku: 'AML-BRG-L', price: 135.00, stockQuantity: 3 },
-        { size: 'XL', color: 'Burgundy', colorHex: '#722F37', sku: 'AML-BRG-XL', price: 135.00, stockQuantity: 2 },
-      ],
-    },
-  ];
+  console.log('✅ Categories created');
 
-  // Create products with images and variants
-  for (const productData of productsData) {
-    const { images, variants, ...product } = productData;
-    
-    const createdProduct = await prisma.product.upsert({
-      where: { slug: product.slug },
-      update: {},
-      create: {
-        ...product,
-        images: {
-          create: images,
-        },
-        variants: {
-          create: variants,
-        },
+  // Create collections
+  await prisma.collection.createMany({
+    data: [
+      {
+        name: 'Summer 2024',
+        slug: 'summer-2024',
+        description: 'Our latest summer collection',
+        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+        featured: true,
+        isActive: true,
       },
-    });
-    console.log(`✓ Product created: ${createdProduct.name}`);
-  }
+      {
+        name: 'Essentials',
+        slug: 'essentials',
+        description: 'Timeless pieces for every wardrobe',
+        image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=800&q=80',
+        featured: true,
+        isActive: true,
+      },
+    ],
+  });
+
+  console.log('✅ Collections created');
 
   // Create hero slides
-  const slides = [
-    {
-      title: 'Rhythm of a Free Spirit',
-      subtitle: 'Summer 2024',
-      description: 'Timeless elegance meets Mediterranean spirit',
-      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
-      buttonText: 'Explore Collection',
-      buttonLink: '/shop',
-      position: 0,
-      isActive: true,
-    },
-    {
-      title: 'Coastal Dreams',
-      subtitle: 'New Collection',
-      description: 'Discover the essence of summer',
-      imageUrl: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1920&q=80',
-      buttonText: 'Shop Now',
-      buttonLink: '/shop',
-      position: 1,
-      isActive: true,
-    },
-    {
-      title: 'Azure Collection',
-      subtitle: 'Limited Edition',
-      description: 'Inspired by the Adriatic Sea',
-      imageUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80',
-      buttonText: 'Discover',
-      buttonLink: '/collections',
-      position: 2,
-      isActive: true,
-    },
+  await prisma.heroSlide.createMany({
+    data: [
+      {
+        title: 'Summer Collection',
+        subtitle: 'New Arrivals',
+        description: 'Timeless elegance meets Mediterranean spirit',
+        buttonText: 'Shop Now',
+        buttonLink: '/shop',
+        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
+        position: 1,
+        isActive: true,
+      },
+      {
+        title: 'Free Shipping',
+        subtitle: 'On Orders €100+',
+        description: 'Enjoy complimentary delivery on all qualifying orders',
+        buttonText: 'Shop Collection',
+        buttonLink: '/shop',
+        image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80',
+        position: 2,
+        isActive: true,
+      },
+      {
+        title: 'Sustainable Luxury',
+        subtitle: 'Eco-Conscious',
+        description: 'Crafted from recycled ocean plastics',
+        buttonText: 'Learn More',
+        buttonLink: '/sustainability',
+        image: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=1920&q=80',
+        position: 3,
+        isActive: true,
+      },
+    ],
+  });
+
+  console.log('✅ Hero slides created');
+
+  // Define colors
+  const colors = [
+    { name: 'Black', hex: '#1a1a1a' },
+    { name: 'White', hex: '#ffffff' },
+    { name: 'Navy', hex: '#1e3a5f' },
+    { name: 'Coral', hex: '#e07b67' },
+    { name: 'Sage', hex: '#9caf88' },
   ];
 
-  for (const slide of slides) {
-    await prisma.heroSlide.upsert({
-      where: { position: slide.position },
-      update: slide,
-      create: slide,
-    });
-  }
-  console.log('✓ Hero slides created');
+  const sizes = ['XS', 'S', 'M', 'L', 'XL'];
 
-  console.log('');
+  // Product 1: Riviera Bikini
+  const product1 = await prisma.product.create({
+    data: {
+      name: 'Riviera Bikini',
+      slug: 'riviera-bikini',
+      description: 'Our signature bikini featuring a flattering high-waisted bottom and supportive triangle top. Crafted from premium Italian Lycra with UPF 50+ protection. The perfect blend of style and comfort for long days by the sea.',
+      price: 129,
+      compareAtPrice: null,
+      featured: true,
+      isNew: true,
+      isBestseller: true,
+      isActive: true,
+      stockQuantity: 100,
+      categoryId: bikinis.id,
+      images: {
+        create: [
+          { url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80', alt: 'Riviera Bikini Front', position: 0, isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1583846783214-e82ad2d9f421?w=800&q=80', alt: 'Riviera Bikini Back', position: 1 },
+        ],
+      },
+      variants: {
+        create: sizes.flatMap((size) =>
+          [colors[0], colors[2], colors[3]].map((color) => ({
+            name: `${size} / ${color.name}`,
+            size,
+            color: color.name,
+            colorHex: color.hex,
+            stockQuantity: 10,
+            isActive: true,
+          }))
+        ),
+      },
+    },
+  });
+
+  // Product 2: Mediterranean One Piece
+  const product2 = await prisma.product.create({
+    data: {
+      name: 'Mediterranean One Piece',
+      slug: 'mediterranean-one-piece',
+      description: 'A sophisticated one-piece swimsuit with elegant cutout details. Features a scoop neckline, adjustable straps, and built-in support. Made from our signature eco-friendly fabric blend.',
+      price: 165,
+      compareAtPrice: 195,
+      featured: true,
+      isNew: false,
+      isBestseller: true,
+      isActive: true,
+      stockQuantity: 75,
+      categoryId: onePieces.id,
+      images: {
+        create: [
+          { url: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80', alt: 'Mediterranean One Piece Front', position: 0, isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?w=800&q=80', alt: 'Mediterranean One Piece Side', position: 1 },
+        ],
+      },
+      variants: {
+        create: sizes.flatMap((size) =>
+          [colors[0], colors[1], colors[2]].map((color) => ({
+            name: `${size} / ${color.name}`,
+            size,
+            color: color.name,
+            colorHex: color.hex,
+            stockQuantity: 8,
+            isActive: true,
+          }))
+        ),
+      },
+    },
+  });
+
+  // Product 3: Amalfi Bikini
+  const product3 = await prisma.product.create({
+    data: {
+      name: 'Amalfi Bikini',
+      slug: 'amalfi-bikini',
+      description: 'Inspired by the Italian coast, this bikini features a bandeau top with removable straps and classic high-leg bottoms. Perfect for achieving that effortlessly chic Mediterranean look.',
+      price: 139,
+      compareAtPrice: null,
+      featured: true,
+      isNew: true,
+      isBestseller: false,
+      isActive: true,
+      stockQuantity: 60,
+      categoryId: bikinis.id,
+      images: {
+        create: [
+          { url: 'https://images.unsplash.com/photo-1582639510494-c80b5de9f148?w=800&q=80', alt: 'Amalfi Bikini Front', position: 0, isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80', alt: 'Amalfi Bikini Detail', position: 1 },
+        ],
+      },
+      variants: {
+        create: sizes.flatMap((size) =>
+          [colors[1], colors[3], colors[4]].map((color) => ({
+            name: `${size} / ${color.name}`,
+            size,
+            color: color.name,
+            colorHex: color.hex,
+            stockQuantity: 6,
+            isActive: true,
+          }))
+        ),
+      },
+    },
+  });
+
+  // Product 4: Capri One Piece
+  const product4 = await prisma.product.create({
+    data: {
+      name: 'Capri One Piece',
+      slug: 'capri-one-piece',
+      description: 'A minimalist one-piece with a plunging V-neckline and open back. Features adjustable cross-back straps and full coverage bottom. Designed for the confident woman.',
+      price: 155,
+      compareAtPrice: null,
+      featured: true,
+      isNew: false,
+      isBestseller: false,
+      isActive: true,
+      stockQuantity: 45,
+      categoryId: onePieces.id,
+      images: {
+        create: [
+          { url: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?w=800&q=80', alt: 'Capri One Piece Front', position: 0, isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80', alt: 'Capri One Piece Back', position: 1 },
+        ],
+      },
+      variants: {
+        create: sizes.flatMap((size) =>
+          [colors[0], colors[2], colors[4]].map((color) => ({
+            name: `${size} / ${color.name}`,
+            size,
+            color: color.name,
+            colorHex: color.hex,
+            stockQuantity: 5,
+            isActive: true,
+          }))
+        ),
+      },
+    },
+  });
+
+  // Product 5: Santorini Bikini
+  const product5 = await prisma.product.create({
+    data: {
+      name: 'Santorini Bikini',
+      slug: 'santorini-bikini',
+      description: 'Our most versatile bikini with a sporty twist. Features a supportive crop-top style top and mid-rise bottoms. Ideal for both swimming and beach volleyball.',
+      price: 119,
+      compareAtPrice: 149,
+      featured: false,
+      isNew: true,
+      isBestseller: false,
+      isActive: true,
+      stockQuantity: 80,
+      categoryId: bikinis.id,
+      images: {
+        create: [
+          { url: 'https://images.unsplash.com/photo-1583846783214-e82ad2d9f421?w=800&q=80', alt: 'Santorini Bikini Front', position: 0, isPrimary: true },
+          { url: 'https://images.unsplash.com/photo-1582639510494-c80b5de9f148?w=800&q=80', alt: 'Santorini Bikini Style', position: 1 },
+        ],
+      },
+      variants: {
+        create: sizes.flatMap((size) =>
+          [colors[0], colors[1], colors[2], colors[3]].map((color) => ({
+            name: `${size} / ${color.name}`,
+            size,
+            color: color.name,
+            colorHex: color.hex,
+            stockQuantity: 8,
+            isActive: true,
+          }))
+        ),
+      },
+    },
+  });
+
+  console.log('✅ Products created');
+
+  // Create site settings
+  await prisma.siteSettings.upsert({
+    where: { id: 'settings' },
+    update: {},
+    create: {
+      id: 'settings',
+      siteName: 'Delphine',
+      siteDescription: 'Luxury Mediterranean Swimwear',
+      contactEmail: 'hello@delphineswimwear.com',
+      contactPhone: '+355 69 123 4567',
+      address: 'Tirana, Albania',
+      socialInstagram: 'https://instagram.com/delphine',
+      socialFacebook: 'https://facebook.com/delphine',
+      shippingFreeThreshold: 100,
+      shippingStandardRate: 8.99,
+      shippingExpressRate: 15.99,
+      taxRate: 0.20,
+      currency: 'EUR',
+    },
+  });
+
+  console.log('✅ Site settings created');
   console.log('🎉 Seed completed successfully!');
-  console.log('');
-  console.log('📦 Products created: 5 (3 Bikinis + 2 One Pieces)');
-  console.log('👤 Admin login: admin@delphine.com / admin123');
 }
 
 main()
   .catch((e) => {
-    console.error('Error seeding database:', e);
+    console.error('❌ Seed failed:', e);
     process.exit(1);
   })
   .finally(async () => {

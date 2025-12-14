@@ -5,9 +5,14 @@ import { getImageUrl } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 
 async function getSlides() {
-  return prisma.heroSlide.findMany({
-    orderBy: { position: 'asc' },
-  });
+  try {
+    return await prisma.heroSlide.findMany({
+      orderBy: { position: 'asc' },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return [];
+  }
 }
 
 export default async function AdminSlidesPage() {
