@@ -40,16 +40,14 @@ export default function ProductPage({ params }: ProductPageProps) {
         const data = await res.json();
         setProduct(data);
         
-        // Set default color if available
         if (data?.variants?.length > 0) {
           const firstColor = data.variants[0].color;
           setSelectedColor(firstColor);
         }
         
-        // Fetch related products
-        const relatedRes = await fetch('/api/products?limit=4');
+        const relatedRes = await fetch('/api/products?limit=8');
         const relatedData = await relatedRes.json();
-        setRelatedProducts(relatedData.filter((p: any) => p.slug !== params.slug).slice(0, 4));
+        setRelatedProducts(relatedData.filter((p: any) => p.slug !== params.slug));
       } catch (err) {
         console.error(err);
       } finally {
@@ -61,17 +59,17 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-20 bg-ivory-100">
-        <div className="w-8 h-8 border border-charcoal-300 border-t-charcoal-700 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center pt-20 bg-cream">
+        <div className="w-6 h-6 border border-charcoal-300 border-t-black rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-20 bg-ivory-100">
-        <h1 className="font-display text-3xl text-charcoal-800 mb-6">Product Not Found</h1>
-        <Link href="/shop" className="px-8 py-3 bg-charcoal-800 text-ivory-100 text-xs tracking-widest uppercase">
+      <div className="min-h-screen flex flex-col items-center justify-center pt-20 bg-cream">
+        <h1 className="text-display text-2xl mb-6">Product Not Found</h1>
+        <Link href="/shop" className="btn-outline">
           Back to Shop
         </Link>
       </div>
@@ -94,7 +92,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   const colors = Array.from(colorsMap.entries()).map(([name, hex]) => ({ name, hex }));
   const sizes = Array.from(sizesSet);
 
-  // Check if selected combo is in stock
   const getVariant = (size: string, color: string) => {
     return product.variants?.find((v: any) => v.size === size && v.color === color);
   };
@@ -102,15 +99,13 @@ export default function ProductPage({ params }: ProductPageProps) {
   const selectedVariant = selectedSize && selectedColor ? getVariant(selectedSize, selectedColor) : null;
   const isInStock = selectedVariant?.stockQuantity > 0;
 
-  // Get product images with fallback
   const getProductImages = () => {
     if (product.images && product.images.length > 0) {
       return product.images.map((img: any) => ({
         ...img,
-        url: getImageUrl(img.url)
+        url: img.url.startsWith('http') ? img.url : getImageUrl(img.url)
       }));
     }
-    // Return placeholder images
     return placeholderImages.map((url, i) => ({ url, alt: product.name }));
   };
 
@@ -171,22 +166,23 @@ export default function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-ivory-100 pt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8">
+    <main className="min-h-screen bg-cream pt-20">
+      <div className="container-main py-8">
         {/* Breadcrumb */}
         <nav className="mb-8">
-          <ol className="flex items-center gap-2 text-xs text-stone-500">
-            <li><Link href="/" className="hover:text-charcoal-700 transition-colors">Home</Link></li>
+          <ol className="flex items-center gap-2 text-xs text-charcoal-500">
+            <li><Link href="/" className="hover:text-black transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/shop" className="hover:text-charcoal-700 transition-colors">Shop</Link></li>
+            <li><Link href="/shop" className="hover:text-black transition-colors">Shop</Link></li>
             <li>/</li>
-            <li className="text-charcoal-700 truncate max-w-[150px]">{product.name}</li>
+            <li className="text-black truncate max-w-[200px]">{product.name}</li>
           </ol>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Images */}
           <div className="space-y-4">
+            {/* Main image */}
             <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden">
               <Image
                 src={images[selectedImage]?.url || primaryImage}
@@ -197,14 +193,15 @@ export default function ProductPage({ params }: ProductPageProps) {
               />
             </div>
             
+            {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-2 overflow-x-auto pb-2">
                 {images.map((img: any, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative w-16 sm:w-20 aspect-[3/4] bg-ivory-200 overflow-hidden flex-shrink-0 transition-opacity ${
-                      selectedImage === index ? 'ring-1 ring-charcoal-700' : 'opacity-60 hover:opacity-100'
+                    className={`relative w-16 md:w-20 aspect-[3/4] bg-ivory-200 overflow-hidden flex-shrink-0 transition-opacity ${
+                      selectedImage === index ? 'opacity-100 ring-1 ring-black' : 'opacity-50 hover:opacity-75'
                     }`}
                   >
                     <Image src={img.url} alt="" fill className="object-cover" />
@@ -215,17 +212,95 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Info */}
-          <div className="lg:py-8">
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-light text-charcoal-800">{product.name}</h1>
-              
-              {/* Wishlist Button */}
+          <div className="lg:py-4">
+            {/* Title & Price */}
+            <div className="mb-8">
+              <h1 className="text-display text-2xl md:text-3xl mb-4">{product.name}</h1>
+              <p className="text-base text-charcoal-700">
+                {formatPrice(product.price)}
+              </p>
+            </div>
+
+            {/* Color Selection - Clean like Zara */}
+            {colors.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-4 mb-3">
+                  <span className="text-xs tracking-wider uppercase text-charcoal-500">Color</span>
+                  <span className="text-xs text-charcoal-700">{selectedColor}</span>
+                </div>
+                <div className="flex gap-2">
+                  {colors.map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => setSelectedColor(c.name)}
+                      className={`w-6 h-6 rounded-full transition-all ${
+                        selectedColor === c.name 
+                          ? 'ring-1 ring-offset-2 ring-black' 
+                          : 'hover:ring-1 hover:ring-offset-2 hover:ring-charcoal-300'
+                      }`}
+                      style={{ backgroundColor: c.hex }}
+                      title={c.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Size Selection - Clean minimal */}
+            {sizes.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs tracking-wider uppercase text-charcoal-500">Size</span>
+                  <Link href="/size-guide" className="text-xs text-charcoal-500 underline hover:text-black transition-colors">
+                    Size Guide
+                  </Link>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {sizes.map((size) => {
+                    const variant = selectedColor ? getVariant(size, selectedColor) : null;
+                    const inStock = variant?.stockQuantity > 0;
+                    
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => inStock && setSelectedSize(size)}
+                        disabled={!inStock}
+                        className={`min-w-[44px] h-10 px-3 text-xs tracking-wider border transition-all ${
+                          selectedSize === size
+                            ? 'border-black bg-black text-white'
+                            : inStock
+                              ? 'border-charcoal-300 text-black hover:border-black'
+                              : 'border-charcoal-200 text-charcoal-300 cursor-not-allowed line-through'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <p className="text-sm text-red-600 mb-4">{error}</p>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3 mb-8">
+              <button
+                onClick={handleAddToCart}
+                disabled={adding}
+                className="flex-1 py-4 bg-black text-white text-xs tracking-[0.2em] uppercase hover:bg-charcoal-800 transition-colors disabled:opacity-50"
+              >
+                {adding ? 'Adding...' : 'Add to Bag'}
+              </button>
               <button
                 onClick={handleWishlistClick}
-                className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full border transition-all ${
+                className={`w-14 h-14 flex items-center justify-center border transition-all ${
                   inWishlist 
-                    ? 'bg-charcoal-800 border-charcoal-800 text-ivory-100' 
-                    : 'border-stone-300 text-charcoal-600 hover:border-charcoal-700 hover:text-charcoal-800'
+                    ? 'bg-black border-black text-white' 
+                    : 'border-charcoal-300 text-charcoal-600 hover:border-black'
                 }`}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
@@ -244,151 +319,55 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </svg>
               </button>
             </div>
-            
-            <div className="mb-8">
-              {product.compareAtPrice && product.compareAtPrice > product.price ? (
-                <div className="flex items-center gap-3">
-                  <span className="font-display text-lg sm:text-xl text-stone-400 line-through">
-                    {formatPrice(product.compareAtPrice)}
-                  </span>
-                  <span className="font-display text-lg sm:text-xl text-charcoal-800">
-                    {formatPrice(product.price)}
-                  </span>
-                </div>
-              ) : (
-                <span className="font-display text-lg sm:text-xl text-charcoal-800">
-                  {formatPrice(product.price)}
-                </span>
-              )}
-            </div>
-
-            {/* Color Selection */}
-            {colors.length > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium tracking-widest uppercase text-stone-500">Color</span>
-                  <span className="text-sm text-charcoal-700">{selectedColor}</span>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {colors.map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => setSelectedColor(c.name)}
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-all ${
-                        selectedColor === c.name 
-                          ? 'ring-2 ring-offset-2 ring-charcoal-700' 
-                          : 'hover:ring-2 hover:ring-offset-2 hover:ring-stone-300'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Size Selection */}
-            {sizes.length > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium tracking-widest uppercase text-stone-500">Size</span>
-                  <Link href="/size-guide" className="text-xs text-stone-500 underline hover:text-charcoal-700 transition-colors">
-                    Size Guide
-                  </Link>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((size) => {
-                    const variant = selectedColor ? getVariant(size, selectedColor) : null;
-                    const inStock = variant?.stockQuantity > 0;
-                    
-                    return (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        disabled={!inStock}
-                        className={`min-w-[48px] sm:min-w-[56px] h-10 sm:h-12 px-3 sm:px-4 text-xs font-medium tracking-wider uppercase border transition-all ${
-                          selectedSize === size
-                            ? 'border-charcoal-800 bg-charcoal-800 text-ivory-100'
-                            : inStock
-                              ? 'border-stone-300 text-charcoal-700 hover:border-charcoal-700'
-                              : 'border-stone-200 text-stone-300 cursor-not-allowed line-through'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm">
-                {error}
-              </div>
-            )}
-
-            {/* Add to Cart & Wishlist Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={handleAddToCart}
-                disabled={adding}
-                className="flex-1 py-4 bg-charcoal-800 text-ivory-100 text-xs font-medium tracking-widest uppercase hover:bg-charcoal-900 transition-colors disabled:opacity-50"
-              >
-                {adding ? 'Adding...' : 'Add to Bag'}
-              </button>
-            </div>
 
             {/* Description */}
             {product.description && (
-              <div className="mt-10 sm:mt-12 pt-8 border-t border-stone-200">
-                <h3 className="text-xs font-medium tracking-widest uppercase text-stone-500 mb-4">Description</h3>
-                <p className="text-sm text-stone-600 leading-relaxed">{product.description}</p>
+              <div className="py-6 border-t border-charcoal-200">
+                <p className="text-sm text-charcoal-600 leading-relaxed">
+                  {product.description}
+                </p>
               </div>
             )}
 
-            {/* Details */}
-            <div className="mt-8 pt-8 border-t border-stone-200">
-              <h3 className="text-xs font-medium tracking-widest uppercase text-stone-500 mb-4">Details</h3>
-              <ul className="space-y-2 text-sm text-stone-600">
-                <li>• Premium Italian Lycra</li>
-                <li>• UPF 50+ sun protection</li>
-                <li>• Chlorine resistant</li>
-                <li>• Quick-drying fabric</li>
-                <li>• Made in Europe</li>
-              </ul>
-            </div>
-
-            {/* Shipping Info */}
-            <div className="mt-8 pt-8 border-t border-stone-200">
-              <div className="grid grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Shipping</h4>
-                  <p className="text-xs text-stone-500">2-5 business days</p>
+            {/* Details accordion style */}
+            <div className="border-t border-charcoal-200">
+              <details className="py-4 border-b border-charcoal-200">
+                <summary className="text-xs tracking-wider uppercase cursor-pointer hover:opacity-70 transition-opacity">
+                  Composition & Care
+                </summary>
+                <div className="mt-4 text-sm text-charcoal-600 space-y-2">
+                  <p>• 80% Recycled Polyamide, 20% Elastane</p>
+                  <p>• UPF 50+ sun protection</p>
+                  <p>• Hand wash cold, lay flat to dry</p>
                 </div>
-                <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Returns</h4>
-                  <p className="text-xs text-stone-500">Within 14 days</p>
+              </details>
+              <details className="py-4 border-b border-charcoal-200">
+                <summary className="text-xs tracking-wider uppercase cursor-pointer hover:opacity-70 transition-opacity">
+                  Shipping & Returns
+                </summary>
+                <div className="mt-4 text-sm text-charcoal-600 space-y-2">
+                  <p>• Free shipping on orders over €100</p>
+                  <p>• Delivery within 3-5 business days</p>
+                  <p>• Free returns within 14 days</p>
                 </div>
-              </div>
+              </details>
             </div>
           </div>
         </div>
 
-        {/* Related Products */}
+        {/* You May Also Like - All variants/related products */}
         {relatedProducts.length > 0 && (
-          <section className="mt-16 sm:mt-24 pt-12 sm:pt-16 border-t border-stone-200">
-            <h2 className="font-display text-xl sm:text-2xl text-charcoal-800 text-center mb-10 sm:mb-12">You May Also Like</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
-              {relatedProducts.map((prod) => {
-                const prodImage = prod.images?.[0]?.url 
-                  ? getImageUrl(prod.images[0].url) 
-                  : placeholderImages[parseInt(prod.id) % placeholderImages.length];
+          <section className="mt-20 pt-16 border-t border-charcoal-200">
+            <h2 className="text-display text-xl md:text-2xl text-center mb-10">You May Also Like</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6">
+              {relatedProducts.slice(0, 8).map((prod, index) => {
+                const prodImage = prod.images?.[0]?.url?.startsWith('http') 
+                  ? prod.images[0].url 
+                  : placeholderImages[index % placeholderImages.length];
                 
                 return (
                   <Link key={prod.id} href={`/products/${prod.slug}`} className="group">
-                    <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-4">
+                    <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-3">
                       <Image
                         src={prodImage}
                         alt={prod.name}
@@ -396,8 +375,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <h3 className="font-display text-sm sm:text-base text-charcoal-800 text-center mb-1 line-clamp-2">{prod.name}</h3>
-                    <p className="text-xs text-stone-500 text-center">{formatPrice(prod.price)}</p>
+                    <h3 className="text-sm text-black text-center mb-1 group-hover:opacity-70 transition-opacity line-clamp-1">
+                      {prod.name}
+                    </h3>
+                    <p className="text-xs text-charcoal-600 text-center">{formatPrice(prod.price)}</p>
                   </Link>
                 );
               })}
@@ -405,6 +386,6 @@ export default function ProductPage({ params }: ProductPageProps) {
           </section>
         )}
       </div>
-    </div>
+    </main>
   );
 }

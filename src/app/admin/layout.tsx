@@ -47,9 +47,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-white border-r border-gray-200 hidden lg:block fixed h-full">
         <div className="p-6 border-b border-gray-200">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="relative h-8 w-24">
+            <div className="relative h-7 w-24">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Delphine Admin"
                 fill
                 className="object-contain"

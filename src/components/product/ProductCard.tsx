@@ -12,7 +12,6 @@ interface ProductCardProps {
     name: string;
     slug: string;
     price: number;
-    compareAtPrice?: number | null;
     images: { url: string; alt?: string | null }[];
     variants?: { id: string; color?: string | null; colorHex?: string | null }[];
   };
@@ -35,25 +34,24 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     useWishlistStore.persist.rehydrate();
   }, []);
 
-  // Get random placeholder based on product id
   const getPlaceholder = () => {
     const index = parseInt(product.id.replace(/\D/g, '') || '0') % placeholderImages.length;
     return placeholderImages[index];
   };
 
   const primaryImage = product.images?.[0]?.url 
-    ? getImageUrl(product.images[0].url) 
+    ? (product.images[0].url.startsWith('http') ? product.images[0].url : getImageUrl(product.images[0].url))
     : getPlaceholder();
+  
   const secondaryImage = product.images?.[1]?.url 
-    ? getImageUrl(product.images[1].url) 
+    ? (product.images[1].url.startsWith('http') ? product.images[1].url : getImageUrl(product.images[1].url))
     : primaryImage;
   
-  // Get unique colors
   const colors = product.variants
     ?.filter(v => v.colorHex)
-    .reduce((acc: { color: string; hex: string }[], v) => {
+    .reduce((acc: { hex: string }[], v) => {
       if (!acc.find(c => c.hex === v.colorHex)) {
-        acc.push({ color: v.color || '', hex: v.colorHex || '' });
+        acc.push({ hex: v.colorHex || '' });
       }
       return acc;
     }, [])
@@ -75,13 +73,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
   return (
     <div className="group relative">
-      {/* Wishlist Button */}
+      {/* Wishlist Button - minimal */}
       <button
         onClick={handleWishlistClick}
-        className={`absolute top-3 right-3 z-10 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full transition-all duration-300 ${
+        className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 ${
           inWishlist 
-            ? 'bg-charcoal-800 text-ivory-100' 
-            : 'bg-white/80 text-charcoal-600 hover:bg-white hover:text-charcoal-800'
+            ? 'bg-black text-white' 
+            : 'bg-white/80 text-charcoal-600 opacity-0 group-hover:opacity-100'
         }`}
         aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
       >
@@ -101,9 +99,8 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       </button>
 
       <Link href={`/products/${product.slug}`} className="block">
-        {/* Image Container */}
+        {/* Image */}
         <div className="relative aspect-[3/4] overflow-hidden bg-ivory-200 mb-4">
-          {/* Primary Image */}
           <Image
             src={primaryImage}
             alt={product.name}
@@ -112,7 +109,6 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover transition-opacity duration-500 group-hover:opacity-0"
           />
-          {/* Secondary Image on Hover */}
           <Image
             src={secondaryImage}
             alt={product.name}
@@ -120,47 +116,25 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
           />
-          
-          {/* Quick View on Hover */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <span className="block w-full py-2.5 bg-charcoal-800 text-ivory-100 text-xs tracking-wider uppercase text-center">
-              Quick View
-            </span>
-          </div>
         </div>
 
-        {/* Product Info */}
+        {/* Info - clean and simple */}
         <div className="text-center">
-          <h3 className="font-display text-sm md:text-base text-charcoal-800 mb-1 group-hover:text-charcoal-600 transition-colors line-clamp-2">
+          <h3 className="text-sm text-black mb-2 group-hover:opacity-70 transition-opacity line-clamp-1">
             {product.name}
           </h3>
-          
-          <div className="flex items-center justify-center gap-2">
-            {product.compareAtPrice && product.compareAtPrice > product.price ? (
-              <>
-                <span className="text-xs text-stone-400 line-through">
-                  {formatPrice(product.compareAtPrice)}
-                </span>
-                <span className="text-xs text-charcoal-700">
-                  {formatPrice(product.price)}
-                </span>
-              </>
-            ) : (
-              <span className="text-xs text-charcoal-700">
-                {formatPrice(product.price)}
-              </span>
-            )}
-          </div>
+          <p className="text-xs text-charcoal-600 mb-3">
+            {formatPrice(product.price)}
+          </p>
 
-          {/* Color Swatches */}
+          {/* Color dots - small and discrete */}
           {colors.length > 0 && (
-            <div className="flex items-center justify-center gap-1.5 mt-3">
+            <div className="flex items-center justify-center gap-1.5">
               {colors.map((c, i) => (
                 <span
                   key={i}
-                  className="w-3 h-3 rounded-full border border-stone-200"
+                  className="w-2.5 h-2.5 rounded-full border border-charcoal-200"
                   style={{ backgroundColor: c.hex }}
-                  title={c.color}
                 />
               ))}
             </div>
