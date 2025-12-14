@@ -32,22 +32,14 @@ const collections = [
   { 
     image: '/images/collections/bikinis.jpg',
     fallback: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80',
-    title: 'Bikinis'
+    title: 'Bikinis',
+    slug: 'bikinis',
   },
   { 
     image: '/images/collections/one-pieces.jpg',
     fallback: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=600&q=80',
-    title: 'One Pieces'
-  },
-  { 
-    image: '/images/collections/cover-ups.jpg',
-    fallback: 'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=600&q=80',
-    title: 'Cover Ups'
-  },
-  { 
-    image: '/images/collections/accessories.jpg',
-    fallback: 'https://images.unsplash.com/photo-1584374232938-8ba5e6ee5365?w=600&q=80',
-    title: 'Accessories'
+    title: 'One Pieces',
+    slug: 'one-pieces',
   },
 ];
 
@@ -186,7 +178,7 @@ export default function HomePage() {
         </button>
       </section>
 
-      {/* ===== COLLECTION (No prices) ===== */}
+      {/* ===== COLLECTION (2 categories: Bikinis & One Pieces) ===== */}
       <section className="py-20 md:py-28 bg-cream">
         <div className="container-main">
           <div className="text-center mb-14 reveal-on-scroll">
@@ -194,13 +186,13 @@ export default function HomePage() {
             <h2 className="text-display text-3xl md:text-4xl">Curated for You</h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
             {collections.map((item, index) => (
               <Link 
                 key={item.title}
-                href="/shop"
+                href={`/collections/${item.slug}`}
                 className="group reveal-on-scroll"
-                style={{ animationDelay: `${index * 100}ms` }}
+                style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="relative aspect-[3/4] overflow-hidden mb-4">
                   <Image
@@ -209,8 +201,9 @@ export default function HomePage() {
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-500" />
                 </div>
-                <h3 className="text-display text-sm md:text-base text-center tracking-wide group-hover:opacity-70 transition-opacity duration-300">
+                <h3 className="text-display text-lg md:text-xl text-center tracking-wide group-hover:opacity-70 transition-opacity duration-300">
                   {item.title}
                 </h3>
               </Link>

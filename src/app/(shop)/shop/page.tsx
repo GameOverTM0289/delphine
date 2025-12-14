@@ -21,27 +21,28 @@ const placeholderImages = [
   'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=600&q=80',
   'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=600&q=80',
   'https://images.unsplash.com/photo-1584374232938-8ba5e6ee5365?w=600&q=80',
+  'https://images.unsplash.com/photo-1594046243098-0fceea9d451e?w=600&q=80',
 ];
 
 export default async function ShopPage() {
   const { products } = await getData();
 
   return (
-    <main className="min-h-screen bg-cream pt-24">
+    <main className="min-h-screen bg-cream pt-28 pb-20">
       {/* Header */}
-      <section className="py-12 md:py-16">
+      <section className="pb-12 md:pb-16">
         <div className="container-main text-center">
           <h1 className="text-display text-3xl md:text-4xl mb-4">Shop</h1>
           <p className="text-body max-w-md mx-auto">
-            Discover our collection of timeless swimwear, crafted for the modern woman.
+            Discover our collection of timeless swimwear.
           </p>
         </div>
       </section>
 
       {/* Products Grid */}
-      <section className="pb-24 md:pb-32">
+      <section>
         <div className="container-main">
-          {/* Simple filter tabs */}
+          {/* Filter tabs - only Bikinis and One Pieces */}
           <div className="flex items-center justify-center gap-8 mb-12 border-b border-charcoal-200 pb-4">
             <button className="text-xs tracking-[0.15em] uppercase text-black border-b-2 border-black pb-2 -mb-[18px]">
               All
@@ -60,17 +61,17 @@ export default async function ShopPage() {
           </p>
 
           {/* Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-14">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-14 max-w-5xl mx-auto">
             {products.map((product, index) => {
               const imageUrl = product.images?.[0]?.url || placeholderImages[index % placeholderImages.length];
               const hoverImageUrl = product.images?.[1]?.url || imageUrl;
               
               // Get unique colors
               const colors = product.variants
-                ?.filter((v: any) => v.colorHex)
-                .reduce((acc: { hex: string }[], v: any) => {
+                ?.filter((v: { colorHex?: string | null }) => v.colorHex)
+                .reduce((acc: { hex: string }[], v: { colorHex?: string | null }) => {
                   if (!acc.find(c => c.hex === v.colorHex)) {
-                    acc.push({ hex: v.colorHex });
+                    acc.push({ hex: v.colorHex || '' });
                   }
                   return acc;
                 }, [])
@@ -107,7 +108,7 @@ export default async function ShopPage() {
                       {formatPrice(product.price)}
                     </p>
 
-                    {/* Color dots - clean and minimal */}
+                    {/* Color dots */}
                     {colors.length > 0 && (
                       <div className="flex items-center justify-center gap-1.5">
                         {colors.map((c: { hex: string }, i: number) => (
@@ -127,7 +128,8 @@ export default async function ShopPage() {
 
           {products.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-charcoal-500">No products available.</p>
+              <p className="text-charcoal-500 mb-6">No products available yet.</p>
+              <p className="text-body text-sm">Check back soon for our new collection.</p>
             </div>
           )}
         </div>

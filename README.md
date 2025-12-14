@@ -11,137 +11,128 @@ Visit: http://localhost:3000
 
 ---
 
+## 📦 Products
+
+**5 Products Total:**
+- 3 Bikinis (Riviera, Santorini, Capri)
+- 2 One Pieces (Aegean, Amalfi)
+
+---
+
 ## 🖼️ HOW TO ADD YOUR OWN IMAGES
 
 ### 1. HERO SLIDER IMAGES (Homepage)
 
 **Location:** `public/images/hero/`
 
-| Filename | Description | Size |
-|----------|-------------|------|
-| `slide-1.jpg` | First slider image | 1920x1080px |
-| `slide-2.jpg` | Second slider image | 1920x1080px |
-| `slide-3.jpg` | Third slider image | 1920x1080px |
+| Filename | Size |
+|----------|------|
+| `slide-1.jpg` | 1920x1080px |
+| `slide-2.jpg` | 1920x1080px |
+| `slide-3.jpg` | 1920x1080px |
 
-**Steps:**
-1. Prepare 3 images (1920x1080px recommended)
-2. Name them: `slide-1.jpg`, `slide-2.jpg`, `slide-3.jpg`
-3. Put them in `public/images/hero/`
-4. Edit `src/app/(shop)/page.tsx` - change `fallback` URLs to `/images/hero/slide-X.jpg`
-
----
-
-### 2. COLLECTION IMAGES (Homepage Categories)
+### 2. COLLECTION IMAGES (Homepage)
 
 **Location:** `public/images/collections/`
 
-| Filename | Description | Size |
-|----------|-------------|------|
-| `bikinis.jpg` | Bikinis category | 600x800px |
-| `one-pieces.jpg` | One pieces category | 600x800px |
-| `cover-ups.jpg` | Cover ups category | 600x800px |
-| `accessories.jpg` | Accessories category | 600x800px |
-
-**Steps:**
-1. Prepare 4 images (600x800px, portrait)
-2. Name them as above
-3. Put in `public/images/collections/`
-4. Edit `src/app/(shop)/page.tsx` - change `fallback` URLs
-
----
+| Filename | Size |
+|----------|------|
+| `bikinis.jpg` | 600x800px |
+| `one-pieces.jpg` | 600x800px |
 
 ### 3. PRODUCT IMAGES
 
 **Location:** `public/images/products/`
 
-**Naming convention:** `product-slug-1.jpg`, `product-slug-2.jpg`
+| Filename | Product |
+|----------|---------|
+| `riviera-bikini-set-1.jpg` | Riviera Bikini main |
+| `riviera-bikini-set-2.jpg` | Riviera Bikini hover |
+| `santorini-bandeau-set-1.jpg` | Santorini main |
+| `santorini-bandeau-set-2.jpg` | Santorini hover |
+| `capri-sport-bikini-1.jpg` | Capri main |
+| `capri-sport-bikini-2.jpg` | Capri hover |
+| `aegean-one-piece-1.jpg` | Aegean main |
+| `aegean-one-piece-2.jpg` | Aegean hover |
+| `amalfi-plunge-one-piece-1.jpg` | Amalfi main |
+| `amalfi-plunge-one-piece-2.jpg` | Amalfi hover |
 
-Example: For "Riviera Bikini Set"
-- `riviera-bikini-set-1.jpg` (main image)
-- `riviera-bikini-set-2.jpg` (hover image)
-
-**Size:** 800x1066px (3:4 ratio) recommended
-
-**Steps:**
-1. Add images to `public/images/products/`
-2. When adding products in Admin, use path: `/images/products/your-image.jpg`
-
----
+**Size:** 800x1066px (3:4 ratio)
 
 ### 4. LOGO FILES
 
 **Location:** `public/`
 
-| Filename | Usage | Size |
-|----------|-------|------|
-| `logo.png` | Header (desktop), Footer | Your logo with tagline |
-| `icon.png` | Header (mobile), Favicon | Just the icon/symbol |
-
-**Steps:**
-1. Replace `logo.png` with your full logo (transparent PNG)
-2. Replace `icon.png` with your icon only (transparent PNG)
-3. Run `npm run build` to update favicon
+| Filename | Usage |
+|----------|-------|
+| `logo.png` | Header (desktop), Footer |
+| `icon.png` | Header (mobile), Favicon |
 
 ---
 
-## 📁 Image Folder Structure
+## 📁 Folder Structure
 
 ```
 public/
-├── logo.png           # Full logo
-├── icon.png           # Icon only
-├── favicon.ico        # Browser favicon
-├── images/
-│   ├── hero/
-│   │   ├── slide-1.jpg
-│   │   ├── slide-2.jpg
-│   │   └── slide-3.jpg
-│   ├── collections/
-│   │   ├── bikinis.jpg
-│   │   ├── one-pieces.jpg
-│   │   ├── cover-ups.jpg
-│   │   └── accessories.jpg
-│   └── products/
-│       ├── product-name-1.jpg
-│       └── product-name-2.jpg
+├── logo.png
+├── icon.png
+├── favicon.ico
+└── images/
+    ├── hero/
+    │   ├── slide-1.jpg
+    │   ├── slide-2.jpg
+    │   └── slide-3.jpg
+    ├── collections/
+    │   ├── bikinis.jpg
+    │   └── one-pieces.jpg
+    └── products/
+        ├── riviera-bikini-set-1.jpg
+        ├── riviera-bikini-set-2.jpg
+        ├── santorini-bandeau-set-1.jpg
+        ├── santorini-bandeau-set-2.jpg
+        ├── capri-sport-bikini-1.jpg
+        ├── capri-sport-bikini-2.jpg
+        ├── aegean-one-piece-1.jpg
+        ├── aegean-one-piece-2.jpg
+        ├── amalfi-plunge-one-piece-1.jpg
+        └── amalfi-plunge-one-piece-2.jpg
 ```
 
 ---
 
 ## 🎨 Color Palette
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| White | `#ffffff` | Backgrounds, text |
-| Black | `#000000` | Text, buttons |
-| Slate Blue | `#546d9d` | Accents |
-| Cream | `#f1efe7` | Main background |
+| Color | Hex |
+|-------|-----|
+| White | `#ffffff` |
+| Black | `#000000` |
+| Slate Blue | `#546d9d` |
+| Cream | `#f1efe7` |
 
 ---
 
-## 📱 Image Sizes Guide
+## 📐 Image Sizes
 
-| Type | Size | Ratio |
-|------|------|-------|
-| Hero Slider | 1920x1080px | 16:9 |
-| Collection | 600x800px | 3:4 |
-| Product | 800x1066px | 3:4 |
-| Logo | Your size | Transparent PNG |
-| Icon | 200x200px+ | 1:1 |
+| Type | Size | Format |
+|------|------|--------|
+| Hero Slider | 1920x1080px | JPG |
+| Collection | 600x800px | JPG |
+| Product | 800x1066px | JPG |
+| Logo | Any | PNG (transparent) |
+| Icon | 200x200px+ | PNG (transparent) |
 
 ---
 
-## 🚀 Deployment
+## 🔧 Database Setup
 
-### Netlify
-1. Connect your GitHub repo
-2. Build command: `npm run build`
-3. Publish directory: `.next`
+```bash
+# Setup database
+npx prisma generate
+npx prisma db push
 
-### Vercel
-1. Import from GitHub
-2. Framework: Next.js (auto-detected)
-3. Deploy!
+# Seed products
+npx prisma db seed
+```
 
 ---
 
@@ -150,10 +141,33 @@ public/
 Create `.env` file:
 
 ```env
-DATABASE_URL="your-database-url"
-NEXTAUTH_SECRET="your-secret-key"
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your-secret-key-here"
 NEXTAUTH_URL="http://localhost:3000"
 ```
+
+---
+
+## 👤 Admin Access
+
+After seeding:
+- Email: `admin@delphine.com`
+- Password: `admin123`
+- URL: `http://localhost:3000/admin`
+
+---
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Push to GitHub
+2. Import in Vercel
+3. Add environment variables
+4. Deploy!
+
+### Netlify
+1. Build: `npm run build`
+2. Publish: `.next`
 
 ---
 
