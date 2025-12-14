@@ -1,18 +1,11 @@
 import prisma from '@/lib/db/prisma';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
-
 async function getOrders() {
-  try {
-    return await prisma.order.findMany({
-      include: { user: true },
-      orderBy: { createdAt: 'desc' },
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    return [];
-  }
+  return prisma.order.findMany({
+    include: { user: true },
+    orderBy: { createdAt: 'desc' },
+  });
 }
 
 export default async function AdminOrdersPage() {

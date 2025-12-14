@@ -2,31 +2,24 @@ import Link from 'next/link';
 import ProductCard from '@/components/product/ProductCard';
 import prisma from '@/lib/db/prisma';
 
-export const dynamic = 'force-dynamic';
-
 async function getData() {
-  try {
-    const [products, categories] = await Promise.all([
-      prisma.product.findMany({
-        where: { isActive: true },
-        include: {
-          images: { orderBy: { position: 'asc' } },
-          variants: true,
-          category: true,
-        },
-        orderBy: [
-          { featured: 'desc' },
-          { createdAt: 'desc' },
-        ],
-      }),
-      prisma.category.findMany(),
-    ]);
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      where: { isActive: true },
+      include: {
+        images: { orderBy: { position: 'asc' } },
+        variants: true,
+        category: true,
+      },
+      orderBy: [
+        { featured: 'desc' },
+        { createdAt: 'desc' },
+      ],
+    }),
+    prisma.category.findMany(),
+  ]);
 
-    return { products, categories };
-  } catch (error) {
-    console.error('Database error:', error);
-    return { products: [], categories: [] };
-  }
+  return { products, categories };
 }
 
 export default async function ShopPage() {

@@ -102,9 +102,9 @@ async function main() {
         isActive: true,
       },
       {
-        title: 'Mediterranean Dreams',
-        subtitle: 'Swim 2024',
-        description: 'Discover our latest designs inspired by the Adriatic coast',
+        title: 'Free Shipping',
+        subtitle: 'On Orders €100+',
+        description: 'Enjoy complimentary delivery on all qualifying orders',
         buttonText: 'Shop Collection',
         buttonLink: '/shop',
         image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80',

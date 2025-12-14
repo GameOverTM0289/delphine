@@ -2,19 +2,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import prisma from '@/lib/db/prisma';
 
-export const dynamic = 'force-dynamic';
-
 async function getCategories() {
-  try {
-    return await prisma.category.findMany({
-      include: {
-        _count: { select: { products: true } },
-      },
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    return [];
-  }
+  return prisma.category.findMany({
+    include: {
+      _count: { select: { products: true } },
+    },
+  });
 }
 
 export default async function CollectionsPage() {

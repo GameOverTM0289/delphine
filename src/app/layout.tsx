@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/Providers';
+import CustomCursor from '@/components/ui/CustomCursor';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,7 +33,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased bg-ivory-100 text-charcoal-700">
-        <Providers>{children}</Providers>
+        <Providers>
+          <CustomCursor />
+          {children}
+        </Providers>
       </body>
     </html>
   );

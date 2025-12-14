@@ -2,22 +2,15 @@ import Image from 'next/image';
 import prisma from '@/lib/db/prisma';
 import { formatPrice, getImageUrl } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
-
 async function getProducts() {
-  try {
-    return await prisma.product.findMany({
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
-        category: true,
-        _count: { select: { variants: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    return [];
-  }
+  return prisma.product.findMany({
+    include: {
+      images: { where: { isPrimary: true }, take: 1 },
+      category: true,
+      _count: { select: { variants: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 }
 
 export default async function AdminProductsPage() {

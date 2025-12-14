@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== CUSTOM CURSOR (alongside normal cursor) ===== */
+.custom-cursor {
+  width: 8px;
+  height: 8px;
+  background: #1A1A1A;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  transition: transform 0.1s ease-out, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+}
+
+.custom-cursor.hover {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid #1A1A1A;
+  opacity: 1;
+}
+
+.custom-cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(26, 26, 26, 0.2);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 99998;
+  transition: transform 0.2s ease-out, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+  transform: translate(-50%, -50%);
+}
+
+.custom-cursor-ring.hover {
+  width: 50px;
+  height: 50px;
+  border-color: rgba(26, 26, 26, 0.3);
+}
+
 /* ===== BASE STYLES ===== */
 @layer base {
   * {
@@ -18,24 +58,25 @@
     @apply bg-ivory-100 text-charcoal-700 font-light;
     font-size: 15px;
     line-height: 1.7;
+    overflow-x: hidden;
   }
   
   ::selection {
-    @apply bg-charcoal-700 text-ivory-100;
+    @apply bg-charcoal-800 text-ivory-100;
   }
   
   /* Elegant scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-ivory-200;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-stone-400 rounded-full;
+    @apply bg-charcoal-400 rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-stone-500;
+    @apply bg-charcoal-500;
   }
 }
 
@@ -106,7 +147,7 @@
 /* ===== BUTTONS ===== */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-8 py-3.5 text-xs font-medium tracking-widest uppercase transition-all duration-500 ease-out;
+    @apply inline-flex items-center justify-center px-8 py-3.5 text-xs font-medium tracking-widest uppercase transition-all duration-500 ease-out relative overflow-hidden;
     letter-spacing: 0.15em;
   }
   
@@ -126,7 +167,6 @@
     @apply btn bg-navy-600 text-ivory-100 hover:bg-navy-700;
   }
   
-  /* Keep btn-ocean for backward compatibility */
   .btn-ocean {
     @apply btn bg-navy-600 text-ivory-100 hover:bg-navy-700;
   }
@@ -135,12 +175,12 @@
 /* ===== LINKS ===== */
 @layer components {
   .link-elegant {
-    @apply relative text-charcoal-700 transition-colors duration-300;
+    @apply relative text-current transition-colors duration-300;
   }
   
   .link-elegant::after {
     content: '';
-    @apply absolute bottom-0 left-0 w-0 h-px bg-charcoal-700 transition-all duration-500 ease-out;
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-500 ease-out;
   }
   
   .link-elegant:hover::after {
@@ -218,7 +258,7 @@
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -228,22 +268,22 @@
 }
 
 @keyframes slideLeft {
-  from { opacity: 0; transform: translateX(40px); }
+  from { opacity: 0; transform: translateX(60px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideRight {
-  from { opacity: 0; transform: translateX(-40px); }
+  from { opacity: 0; transform: translateX(-60px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes reveal {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(60px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -254,6 +294,8 @@
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
 .delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
 
 /* ===== HOVER EFFECTS ===== */
 @layer utilities {
@@ -261,21 +303,21 @@
     @apply transition-transform duration-500 ease-out;
   }
   .hover-lift:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
   }
   
   .hover-scale {
     @apply transition-transform duration-700 ease-out;
   }
   .hover-scale:hover {
-    transform: scale(1.02);
+    transform: scale(1.03);
   }
   
   .img-zoom {
-    @apply transition-transform duration-700 ease-out;
+    @apply transition-transform duration-1000 ease-out;
   }
   .group:hover .img-zoom {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 }
 
@@ -367,4 +409,26 @@
   .body-text-lg {
     @apply body-lg;
   }
+}
+
+/* ===== SCROLLBAR HIDE ===== */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== GLASS EFFECT ===== */
+.glass {
+  background: rgba(253, 251, 247, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-dark {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }

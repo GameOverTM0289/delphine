@@ -4,8 +4,6 @@ import ProductCard from '@/components/product/ProductCard';
 import prisma from '@/lib/db/prisma';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
-
 interface CollectionPageProps {
   params: { slug: string };
 }
@@ -16,29 +14,24 @@ const categoryImages: Record<string, string> = {
 };
 
 async function getCategoryData(slug: string) {
-  try {
-    const category = await prisma.category.findUnique({
-      where: { slug },
-      include: {
-        products: {
-          where: { isActive: true },
-          include: {
-            images: { orderBy: { position: 'asc' } },
-            variants: true,
-          },
-          orderBy: [
-            { featured: 'desc' },
-            { createdAt: 'desc' },
-          ],
+  const category = await prisma.category.findUnique({
+    where: { slug },
+    include: {
+      products: {
+        where: { isActive: true },
+        include: {
+          images: { orderBy: { position: 'asc' } },
+          variants: true,
         },
+        orderBy: [
+          { featured: 'desc' },
+          { createdAt: 'desc' },
+        ],
       },
-    });
+    },
+  });
 
-    return category;
-  } catch (error) {
-    console.error('Database error:', error);
-    return null;
-  }
+  return category;
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
