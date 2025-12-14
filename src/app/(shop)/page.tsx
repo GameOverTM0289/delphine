@@ -6,36 +6,6 @@ import prisma from '@/lib/db/prisma';
 
 export const dynamic = 'force-dynamic';
 
-const defaultSlides = [
-  {
-    id: '1',
-    title: 'Summer Collection',
-    subtitle: 'New Arrivals',
-    description: 'Timeless elegance meets Mediterranean spirit',
-    buttonText: 'Shop Now',
-    buttonLink: '/shop',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
-  },
-  {
-    id: '2',
-    title: 'Free Shipping',
-    subtitle: 'On Orders €100+',
-    description: 'Enjoy complimentary delivery on all qualifying orders',
-    buttonText: 'Shop Collection',
-    buttonLink: '/shop',
-    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80',
-  },
-  {
-    id: '3',
-    title: 'Sustainable Luxury',
-    subtitle: 'Eco-Conscious',
-    description: 'Crafted from recycled ocean plastics',
-    buttonText: 'Learn More',
-    buttonLink: '/sustainability',
-    image: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=1920&q=80',
-  },
-];
-
 async function getHomeData() {
   try {
     const [slides, featuredProducts] = await Promise.all([
@@ -60,7 +30,17 @@ async function getHomeData() {
 export default async function HomePage() {
   const { slides, featuredProducts } = await getHomeData();
 
-  const heroSlides = slides.length > 0 ? slides : defaultSlides;
+  const heroSlides = slides.length > 0 ? slides : [
+    {
+      id: '1',
+      title: 'Summer Collection',
+      subtitle: 'New Arrivals',
+      description: 'Timeless elegance meets Mediterranean spirit',
+      buttonText: 'Shop Now',
+      buttonLink: '/shop',
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
+    },
+  ];
 
   return (
     <>
