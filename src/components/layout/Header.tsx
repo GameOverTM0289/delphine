@@ -73,7 +73,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5 z-50"
+              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5 z-10"
               aria-label="Toggle menu"
             >
               <span className={`w-5 h-px ${menuBarColor} transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`} />
@@ -95,7 +95,7 @@ export default function Header() {
             </nav>
 
             {/* Logo */}
-            <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center z-10">
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
               {/* Mobile */}
               <div className="block md:hidden relative h-10 w-8">
                 <Image
@@ -107,7 +107,7 @@ export default function Header() {
                 />
               </div>
               {/* Desktop */}
-              <div className="hidden md:block relative h-12 w-40 lg:h-14 lg:w-48 xl:h-16 xl:w-56">
+              <div className="hidden md:block relative h-10 w-36 lg:h-12 lg:w-44">
                 <Image
                   src="/logo.png"
                   alt="Delphine"
@@ -119,7 +119,7 @@ export default function Header() {
             </Link>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-4 z-50">
+            <div className="flex items-center gap-4 z-10">
               {/* Account */}
               {session ? (
                 <div className="relative group">

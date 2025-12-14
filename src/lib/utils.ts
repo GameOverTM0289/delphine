@@ -89,6 +89,7 @@ export function getImageUrl(path: string): string {
 
 // Constants
 export const SHIPPING = {
+  FREE_THRESHOLD: 100,
   STANDARD: 8.99,
   EXPRESS: 15.99,
 };
