@@ -1,54 +1,76 @@
 export default function ShippingPage() {
   return (
-    <>
-      <section className="pt-32 pb-16 bg-ivory-100">
-        <div className="container-luxury text-center">
-          <span className="label animate-fade-down">Delivery</span>
-          <h1 className="heading-display mt-4 animate-fade-up">Shipping</h1>
+    <main className="min-h-screen bg-cream pt-28 pb-20">
+      <div className="container-main max-w-3xl">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-display text-3xl md:text-4xl mb-4">Shipping</h1>
+          <p className="text-body">
+            We deliver worldwide with care and precision.
+          </p>
         </div>
-      </section>
 
-      <section className="section bg-ivory-200">
-        <div className="container-narrow">
-          {/* Shipping Options */}
-          <div className="mb-20">
-            <h2 className="heading-3 mb-10 text-center">Shipping Options</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { name: 'Standard', price: '€8.99', time: '5-7 business days', note: 'Free over €100' },
-                { name: 'Express', price: '€15.99', time: '2-3 business days', featured: true },
-                { name: 'International', price: '€24.99', time: '7-14 business days' },
-              ].map((option) => (
-                <div 
-                  key={option.name} 
-                  className={`p-8 text-center ${option.featured ? 'bg-ivory-100 border border-charcoal-700' : 'bg-ivory-100'}`}
-                >
-                  <h3 className="font-display text-lg text-charcoal-800 mb-2">{option.name}</h3>
-                  <p className="font-display text-2xl text-charcoal-700 mb-2">{option.price}</p>
-                  <p className="body-sm text-stone-500 mb-2">{option.time}</p>
-                  {option.note && (
-                    <p className="body-sm text-stone-400">{option.note}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Delivery Areas */}
-          <div>
-            <h2 className="heading-3 mb-10 text-center">Delivery Areas</h2>
-            <div className="bg-ivory-100 p-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {['Albania', 'Kosovo', 'North Macedonia', 'Montenegro', 'Greece', 'Italy', 'Germany', 'UK', 'France', 'Austria', 'Switzerland', 'USA'].map((country) => (
-                  <div key={country} className="body-sm text-charcoal-700">
-                    {country}
-                  </div>
-                ))}
+        {/* Content */}
+        <div className="space-y-12">
+          <section>
+            <h2 className="text-display text-xl mb-6">Delivery Times</h2>
+            <div className="bg-white p-6 space-y-4">
+              <div className="flex justify-between py-3 border-b border-charcoal-100">
+                <span className="text-sm">Albania</span>
+                <span className="text-sm text-charcoal-600">1-2 business days</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-charcoal-100">
+                <span className="text-sm">Europe</span>
+                <span className="text-sm text-charcoal-600">3-5 business days</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-charcoal-100">
+                <span className="text-sm">USA & Canada</span>
+                <span className="text-sm text-charcoal-600">5-7 business days</span>
+              </div>
+              <div className="flex justify-between py-3">
+                <span className="text-sm">Rest of World</span>
+                <span className="text-sm text-charcoal-600">7-14 business days</span>
               </div>
             </div>
-          </div>
+          </section>
+
+          <section>
+            <h2 className="text-display text-xl mb-6">Shipping Costs</h2>
+            <div className="bg-white p-6 space-y-4">
+              <div className="flex justify-between py-3 border-b border-charcoal-100">
+                <span className="text-sm">Orders over €100</span>
+                <span className="text-sm text-charcoal-600">Free</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-charcoal-100">
+                <span className="text-sm">Standard Shipping</span>
+                <span className="text-sm text-charcoal-600">€8.99</span>
+              </div>
+              <div className="flex justify-between py-3">
+                <span className="text-sm">Express Shipping</span>
+                <span className="text-sm text-charcoal-600">€15.99</span>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-display text-xl mb-6">Order Tracking</h2>
+            <p className="text-body leading-relaxed">
+              Once your order has been shipped, you will receive a confirmation email with a tracking number. 
+              You can use this number to track your package on our shipping partner&apos;s website.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-display text-xl mb-6">Questions?</h2>
+            <p className="text-body leading-relaxed mb-6">
+              If you have any questions about shipping, please don&apos;t hesitate to contact us.
+            </p>
+            <a href="mailto:hello@delphineswimwear.com" className="btn-outline">
+              Contact Us
+            </a>
+          </section>
         </div>
-      </section>
-    </>
+      </div>
+    </main>
   );
 }
