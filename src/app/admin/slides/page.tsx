@@ -2,17 +2,10 @@ import Image from 'next/image';
 import prisma from '@/lib/db/prisma';
 import { getImageUrl } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
-
 async function getSlides() {
-  try {
-    return await prisma.heroSlide.findMany({
-      orderBy: { position: 'asc' },
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    return [];
-  }
+  return prisma.heroSlide.findMany({
+    orderBy: { position: 'asc' },
+  });
 }
 
 export default async function AdminSlidesPage() {
