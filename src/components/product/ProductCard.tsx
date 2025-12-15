@@ -1,99 +1,110 @@
 'use client';
 
-import Image from 'next/image';
+import { useState } from 'react';
 import Link from 'next/link';
-import { formatPrice } from '@/lib/utils';
+import Image from 'next/image';
+import { Product } from '@/lib/types';
+import { useCartStore } from '@/lib/store/cart';
+import { formatPrice, cn } from '@/lib/utils';
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    name: string;
-    slug: string;
-    price: number;
-    compareAtPrice?: number | null;
-    images: { url: string; alt?: string | null }[];
-    variants?: { id: string; color?: string | null; colorHex?: string | null }[];
-  };
+  product: Product;
   priority?: boolean;
 }
 
-const placeholderImage = 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=600&q=80';
-
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  const primaryImage = product.images?.[0]?.url || placeholderImage;
-  const secondaryImage = product.images?.[1]?.url || primaryImage;
-  
-  // Get unique colors
-  const colors = product.variants
-    ?.filter(v => v.colorHex)
-    .reduce((acc: { color: string; hex: string }[], v) => {
-      if (!acc.find(c => c.hex === v.colorHex)) {
-        acc.push({ color: v.color || '', hex: v.colorHex || '' });
-      }
-      return acc;
-    }, [])
-    .slice(0, 4) || [];
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
+
+  const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
+  const hoverImage = product.images[1] || primaryImage;
+  const selectedColor = product.colors[selectedColorIndex];
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const defaultSize = product.sizes.find((s) => s.name === 'M') || product.sizes[0];
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      productSlug: product.slug,
+      productImage: primaryImage.url,
+      colorId: selectedColor.id,
+      colorName: selectedColor.name,
+      colorHex: selectedColor.hex,
+      sizeId: defaultSize.id,
+      sizeName: defaultSize.name,
+      price: product.price,
+    });
+  };
 
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
-      {/* Image Container */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-ivory-200 mb-4">
-        {/* Primary Image */}
-        <Image
-          src={primaryImage}
-          alt={product.name}
-          fill
-          priority={priority}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition-opacity duration-500 group-hover:opacity-0"
-        />
-        {/* Secondary Image on Hover */}
-        <Image
-          src={secondaryImage}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        />
-      </div>
-
-      {/* Product Info */}
-      <div className="text-center">
-        <h3 className="font-display text-base text-charcoal-800 mb-1 group-hover:text-charcoal-600 transition-colors">
-          {product.name}
-        </h3>
-        
-        <div className="flex items-center justify-center gap-2">
-          {product.compareAtPrice && product.compareAtPrice > product.price ? (
-            <>
-              <span className="text-xs text-stone-400 line-through">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-              <span className="text-xs text-charcoal-700">
-                {formatPrice(product.price)}
-              </span>
-            </>
-          ) : (
-            <span className="text-xs text-charcoal-700">
-              {formatPrice(product.price)}
-            </span>
-          )}
+    <article className="group">
+      <Link
+        href={`/products/${product.slug}`}
+        className="block"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative aspect-[3/4] bg-cream overflow-hidden mb-4">
+          <Image
+            src={primaryImage.url}
+            alt={primaryImage.alt}
+            fill
+            priority={priority}
+            className={cn(
+              'object-cover transition-all duration-700',
+              isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            )}
+          />
+          <Image
+            src={hoverImage.url}
+            alt={hoverImage.alt}
+            fill
+            className={cn(
+              'object-cover transition-all duration-700',
+              isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+            )}
+          />
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {product.isNew && <span className="badge-black">New</span>}
+            {product.isBestseller && <span className="badge-cream">Bestseller</span>}
+          </div>
+          <button
+            onClick={handleQuickAdd}
+            className={cn(
+              'absolute bottom-4 left-4 right-4 btn-primary text-sm py-2 transition-all duration-300',
+              isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            )}
+          >
+            Quick Add
+          </button>
         </div>
-
-        {/* Color Swatches */}
-        {colors.length > 0 && (
-          <div className="flex items-center justify-center gap-1.5 mt-3">
-            {colors.map((c, i) => (
-              <span
-                key={i}
-                className="w-3 h-3 rounded-full border border-stone-200"
-                style={{ backgroundColor: c.hex }}
-                title={c.color}
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            {product.colors.map((color, index) => (
+              <button
+                key={color.id}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedColorIndex(index);
+                }}
+                className={cn(
+                  'w-4 h-4 rounded-full border-2 transition-all',
+                  selectedColorIndex === index ? 'border-black scale-110' : 'border-transparent hover:scale-110'
+                )}
+                style={{ backgroundColor: color.hex }}
               />
             ))}
           </div>
-        )}
-      </div>
-    </Link>
+          <h3 className="font-medium text-sm group-hover:underline line-clamp-1">{product.name}</h3>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{formatPrice(product.price)}</span>
+          </div>
+        </div>
+      </Link>
+    </article>
   );
 }

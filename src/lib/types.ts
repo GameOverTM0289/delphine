@@ -1,95 +1,67 @@
 export interface Product {
   id: string;
-  name: string;
   slug: string;
+  name: string;
   description: string;
   price: number;
   compareAtPrice?: number;
-  images: string[];
-  category: string;
+  category: 'bikini' | 'one-piece';
   collection?: string;
   colors: ProductColor[];
-  sizes: string[];
-  tags?: string[];
-  isNew?: boolean;
-  isBestSeller?: boolean;
-  inStock?: boolean;
-  material?: string;
-  careInstructions?: string[];
+  sizes: ProductSize[];
+  images: ProductImage[];
+  featured: boolean;
+  isNew: boolean;
+  isBestseller: boolean;
+  inStock: boolean;
+  stockQuantity: number;
+  careInstructions: string[];
+  details: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProductColor {
+  id: string;
   name: string;
   hex: string;
-  image?: string;
+  available: boolean;
 }
 
-export interface CartItem {
-  productId: string;
-  productName: string;
-  productImage: string;
-  variantId: string;
-  variantName: string;
-  size: string;
-  color: string;
-  price: number;
-  quantity: number;
+export interface ProductSize {
+  id: string;
+  name: 'S' | 'M' | 'L';
+  inStock: boolean;
+  stockQuantity: number;
+}
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  alt: string;
+  isPrimary: boolean;
 }
 
 export interface Collection {
   id: string;
-  name: string;
   slug: string;
+  name: string;
   description: string;
   image: string;
-  productCount?: number;
+  featured: boolean;
+  productCount: number;
 }
 
-export interface CheckoutFormData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  address: string;
-  apartment?: string;
-  city: string;
-  country: string;
-  postalCode: string;
-  phonePrefix: string;
-  phone: string;
-}
-
-export interface FormErrors {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  address?: string;
-  city?: string;
-  country?: string;
-  postalCode?: string;
-  phone?: string;
-}
-
-export interface NewsletterSubscriber {
-  id: string;
-  email: string;
-  firstName?: string;
-  isActive: boolean;
-  subscribedAt: Date;
-  unsubscribedAt?: Date;
-}
-
-export interface ContactFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-export interface ShippingMethod {
-  id: string;
-  name: string;
-  description: string;
+export interface CartItemData {
+  productId: string;
+  productName: string;
+  productSlug: string;
+  productImage: string;
+  colorId: string;
+  colorName: string;
+  colorHex: string;
+  sizeId: string;
+  sizeName: string;
   price: number;
-  estimatedDays: string;
+  quantity: number;
 }

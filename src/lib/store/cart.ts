@@ -1,34 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export interface CartItem {
-  productId: string;
-  variantId: string;
-  productName: string;
-  productSlug: string;
-  productImage: string;
-  variantName: string;
-  size: string;
-  color: string;
-  colorHex: string;
-  price: number;
-  quantity: number;
-}
+import { CartItemData } from '../types';
 
 interface CartState {
-  items: CartItem[];
+  items: CartItemData[];
   isOpen: boolean;
-  
-  // Actions
-  addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (variantId: string) => void;
-  updateQuantity: (variantId: string, quantity: number) => void;
+  addItem: (item: Omit<CartItemData, 'quantity'>) => void;
+  removeItem: (productId: string, colorId: string, sizeId: string) => void;
+  updateQuantity: (productId: string, colorId: string, sizeId: string, quantity: number) => void;
   clearCart: () => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  
-  // Computed
   getItemCount: () => number;
   getSubtotal: () => number;
 }
@@ -42,7 +25,10 @@ export const useCartStore = create<CartState>()(
       addItem: (item) => {
         set((state) => {
           const existingIndex = state.items.findIndex(
-            (i) => i.variantId === item.variantId
+            (i) =>
+              i.productId === item.productId &&
+              i.colorId === item.colorId &&
+              i.sizeId === item.sizeId
           );
 
           if (existingIndex > -1) {
@@ -58,21 +44,26 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      removeItem: (variantId) => {
+      removeItem: (productId, colorId, sizeId) => {
         set((state) => ({
-          items: state.items.filter((i) => i.variantId !== variantId),
+          items: state.items.filter(
+            (i) =>
+              !(i.productId === productId && i.colorId === colorId && i.sizeId === sizeId)
+          ),
         }));
       },
 
-      updateQuantity: (variantId, quantity) => {
+      updateQuantity: (productId, colorId, sizeId, quantity) => {
         if (quantity < 1) {
-          get().removeItem(variantId);
+          get().removeItem(productId, colorId, sizeId);
           return;
         }
 
         set((state) => ({
           items: state.items.map((i) =>
-            i.variantId === variantId ? { ...i, quantity } : i
+            i.productId === productId && i.colorId === colorId && i.sizeId === sizeId
+              ? { ...i, quantity }
+              : i
           ),
         }));
       },
