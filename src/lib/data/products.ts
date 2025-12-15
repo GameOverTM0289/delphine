@@ -1,143 +1,223 @@
-import { Product, Collection, ProductSize, ProductColor } from '../types';
+import { Product, Collection } from '@/lib/types';
 
-const standardSizes: ProductSize[] = [
-  { id: 'size-s', name: 'S', inStock: true, stockQuantity: 10 },
-  { id: 'size-m', name: 'M', inStock: true, stockQuantity: 15 },
-  { id: 'size-l', name: 'L', inStock: true, stockQuantity: 12 },
-];
-
-const standardColors: ProductColor[] = [
-  { id: 'color-cream', name: 'Cream', hex: '#FFFDD0', available: true },
-  { id: 'color-black', name: 'Black', hex: '#000000', available: true },
-  { id: 'color-sky', name: 'Sky Blue', hex: '#9EB8EE', available: true },
+export const collections: Collection[] = [
+  {
+    id: '1',
+    name: 'Mediterranean Summer',
+    slug: 'mediterranean-summer',
+    description: 'Inspired by the azure waters and sun-kissed shores of the Mediterranean.',
+    image: '/images/collections/mediterranean.jpg',
+    productCount: 12,
+  },
+  {
+    id: '2',
+    name: 'Côte d\'Azur',
+    slug: 'cote-dazur',
+    description: 'Elegant pieces inspired by the French Riviera\'s timeless glamour.',
+    image: '/images/collections/cote-dazur.jpg',
+    productCount: 8,
+  },
+  {
+    id: '3',
+    name: 'Santorini Dreams',
+    slug: 'santorini-dreams',
+    description: 'White and blue hues reminiscent of Greek island beauty.',
+    image: '/images/collections/santorini.jpg',
+    productCount: 10,
+  },
+  {
+    id: '4',
+    name: 'Amalfi Coast',
+    slug: 'amalfi-coast',
+    description: 'Vibrant colors inspired by Italy\'s stunning coastline.',
+    image: '/images/collections/amalfi.jpg',
+    productCount: 9,
+  },
 ];
 
 export const products: Product[] = [
   {
-    id: 'prod-1',
-    slug: 'riviera-bikini-set',
-    name: 'Riviera Bikini Set',
-    description: 'A timeless triangle bikini set inspired by the French Riviera. Features adjustable ties and a flattering cut.',
-    price: 89,
-    category: 'bikini',
-    collection: 'summer-2024',
-    colors: standardColors,
-    sizes: standardSizes,
+    id: '1',
+    name: 'Capri One-Piece',
+    slug: 'capri-one-piece',
+    description: 'A timeless one-piece swimsuit featuring a flattering scoop neckline and elegant back detail. Perfect for beach days or pool parties.',
+    price: 129,
+    compareAtPrice: 159,
     images: [
-      { id: 'img-1', url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800', alt: 'Riviera Bikini Set', isPrimary: true },
-      { id: 'img-2', url: 'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=800', alt: 'Riviera Bikini Set Back', isPrimary: false },
+      '/images/products/capri-1.jpg',
+      '/images/products/capri-2.jpg',
+      '/images/products/capri-3.jpg',
     ],
-    featured: true,
-    isNew: true,
-    isBestseller: false,
-    inStock: true,
-    stockQuantity: 37,
-    careInstructions: ['Hand wash cold', 'Lay flat to dry', 'Do not bleach'],
-    details: ['Italian fabric', 'UPF 50+ protection', 'Fully lined'],
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: 'prod-2',
-    slug: 'aegean-one-piece',
-    name: 'Aegean One Piece',
-    description: 'An elegant one-piece swimsuit with a plunging neckline and crossed back straps.',
-    price: 120,
     category: 'one-piece',
-    collection: 'summer-2024',
-    colors: standardColors,
-    sizes: standardSizes,
-    images: [
-      { id: 'img-3', url: 'https://images.unsplash.com/photo-1597345303950-50c8a33df1c9?w=800', alt: 'Aegean One Piece', isPrimary: true },
-      { id: 'img-4', url: 'https://images.unsplash.com/photo-1580618864180-af464afa5c71?w=800', alt: 'Aegean One Piece Side', isPrimary: false },
+    collection: 'mediterranean-summer',
+    colors: [
+      { name: 'Ocean Blue', hex: '#0ea5e9', image: '/images/products/capri-blue.jpg' },
+      { name: 'Coral', hex: '#f97316', image: '/images/products/capri-coral.jpg' },
+      { name: 'Black', hex: '#171717', image: '/images/products/capri-black.jpg' },
     ],
-    featured: true,
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    tags: ['bestseller', 'sustainable'],
     isNew: false,
-    isBestseller: true,
+    isBestSeller: true,
     inStock: true,
-    stockQuantity: 28,
-    careInstructions: ['Hand wash cold', 'Lay flat to dry', 'Do not bleach'],
-    details: ['Italian fabric', 'UPF 50+ protection', 'Fully lined'],
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
+    material: '78% Recycled Nylon, 22% Elastane',
+    careInstructions: ['Hand wash cold', 'Do not bleach', 'Lay flat to dry'],
   },
   {
-    id: 'prod-3',
-    slug: 'santorini-bandeau-set',
-    name: 'Santorini Bandeau Set',
-    description: 'A chic bandeau bikini set perfect for sun-soaked days. Features removable straps.',
-    price: 95,
-    category: 'bikini',
-    collection: 'summer-2024',
-    colors: standardColors,
-    sizes: standardSizes,
+    id: '2',
+    name: 'Riviera Bikini Set',
+    slug: 'riviera-bikini-set',
+    description: 'A sophisticated bikini set with adjustable straps and gold-tone hardware. The high-waisted bottom provides a retro-inspired silhouette.',
+    price: 149,
     images: [
-      { id: 'img-5', url: 'https://images.unsplash.com/photo-1594046243098-0fceea9d451e?w=800', alt: 'Santorini Bandeau Set', isPrimary: true },
-      { id: 'img-6', url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800', alt: 'Santorini Bandeau Set Back', isPrimary: false },
+      '/images/products/riviera-1.jpg',
+      '/images/products/riviera-2.jpg',
     ],
-    featured: true,
+    category: 'bikini',
+    collection: 'cote-dazur',
+    colors: [
+      { name: 'White', hex: '#ffffff', image: '/images/products/riviera-white.jpg' },
+      { name: 'Navy', hex: '#1e3a5f', image: '/images/products/riviera-navy.jpg' },
+      { name: 'Blush', hex: '#fdb5b5', image: '/images/products/riviera-blush.jpg' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    tags: ['new', 'premium'],
     isNew: true,
-    isBestseller: false,
+    isBestSeller: false,
     inStock: true,
-    stockQuantity: 22,
-    careInstructions: ['Hand wash cold', 'Lay flat to dry', 'Do not bleach'],
-    details: ['Italian fabric', 'UPF 50+ protection', 'Fully lined'],
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-20'),
+    material: '80% Recycled Polyamide, 20% Elastane',
+    careInstructions: ['Hand wash cold', 'Do not tumble dry', 'Iron on low heat'],
   },
   {
-    id: 'prod-4',
-    slug: 'capri-sport-bikini',
-    name: 'Capri Sport Bikini',
-    description: 'A sporty bikini designed for active beach days. Secure fit with maximum comfort.',
-    price: 85,
-    category: 'bikini',
-    collection: 'sport',
-    colors: standardColors,
-    sizes: standardSizes,
+    id: '3',
+    name: 'Mykonos Triangle Top',
+    slug: 'mykonos-triangle-top',
+    description: 'A classic triangle bikini top with adjustable ties and removable padding. Perfect for mixing and matching.',
+    price: 69,
     images: [
-      { id: 'img-7', url: 'https://images.unsplash.com/photo-1582639590011-f5a8416d1101?w=800', alt: 'Capri Sport Bikini', isPrimary: true },
-      { id: 'img-8', url: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800', alt: 'Capri Sport Bikini Side', isPrimary: false },
+      '/images/products/mykonos-top-1.jpg',
+      '/images/products/mykonos-top-2.jpg',
     ],
-    featured: false,
-    isNew: false,
-    isBestseller: true,
+    category: 'bikini-top',
+    collection: 'santorini-dreams',
+    colors: [
+      { name: 'Aegean Blue', hex: '#1d4ed8', image: '/images/products/mykonos-blue.jpg' },
+      { name: 'Terracotta', hex: '#c2410c', image: '/images/products/mykonos-terra.jpg' },
+      { name: 'Cream', hex: '#fef3c7', image: '/images/products/mykonos-cream.jpg' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    isNew: true,
     inStock: true,
-    stockQuantity: 45,
-    careInstructions: ['Hand wash cold', 'Lay flat to dry', 'Do not bleach'],
-    details: ['Quick-dry fabric', 'UPF 50+ protection', 'Chlorine resistant'],
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-05'),
-  },
-];
-
-export const collections: Collection[] = [
-  {
-    id: 'col-1',
-    slug: 'summer-2024',
-    name: 'Summer 2024',
-    description: 'Our latest collection inspired by the Mediterranean coastline.',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200',
-    featured: true,
-    productCount: 3,
+    material: '72% Recycled Nylon, 28% Spandex',
   },
   {
-    id: 'col-2',
-    slug: 'bikinis',
-    name: 'Bikinis',
-    description: 'Classic and modern bikini sets for every style.',
-    image: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=1200',
-    featured: true,
-    productCount: 3,
+    id: '4',
+    name: 'Positano High-Waist Bottom',
+    slug: 'positano-high-waist-bottom',
+    description: 'High-waisted bikini bottom with a flattering cut and full coverage. Pairs perfectly with our triangle tops.',
+    price: 79,
+    images: [
+      '/images/products/positano-1.jpg',
+      '/images/products/positano-2.jpg',
+    ],
+    category: 'bikini-bottom',
+    collection: 'amalfi-coast',
+    colors: [
+      { name: 'Lemon', hex: '#fde047', image: '/images/products/positano-lemon.jpg' },
+      { name: 'Ocean', hex: '#0ea5e9', image: '/images/products/positano-ocean.jpg' },
+      { name: 'Black', hex: '#171717', image: '/images/products/positano-black.jpg' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    isBestSeller: true,
+    inStock: true,
+    material: '78% Recycled Nylon, 22% Elastane',
   },
   {
-    id: 'col-3',
-    slug: 'one-pieces',
-    name: 'One Pieces',
-    description: 'Elegant one-piece swimsuits with sophisticated designs.',
-    image: 'https://images.unsplash.com/photo-1597345303950-50c8a33df1c9?w=1200',
-    featured: true,
-    productCount: 1,
+    id: '5',
+    name: 'Monaco Swim Dress',
+    slug: 'monaco-swim-dress',
+    description: 'An elegant swim dress with built-in support and a flowy skirt. Perfect for those who prefer more coverage without sacrificing style.',
+    price: 159,
+    compareAtPrice: 189,
+    images: [
+      '/images/products/monaco-1.jpg',
+      '/images/products/monaco-2.jpg',
+    ],
+    category: 'swim-dress',
+    collection: 'cote-dazur',
+    colors: [
+      { name: 'Navy', hex: '#1e3a5f', image: '/images/products/monaco-navy.jpg' },
+      { name: 'Red', hex: '#dc2626', image: '/images/products/monaco-red.jpg' },
+    ],
+    sizes: ['S', 'M', 'L', 'XL'],
+    tags: ['elegant', 'coverage'],
+    inStock: true,
+    material: '85% Nylon, 15% Spandex',
+  },
+  {
+    id: '6',
+    name: 'Sardinia Cover-Up',
+    slug: 'sardinia-cover-up',
+    description: 'A lightweight, flowing cover-up perfect for transitioning from beach to bar. Features a beautiful embroidered hem.',
+    price: 89,
+    images: [
+      '/images/products/sardinia-1.jpg',
+      '/images/products/sardinia-2.jpg',
+    ],
+    category: 'cover-up',
+    collection: 'mediterranean-summer',
+    colors: [
+      { name: 'White', hex: '#ffffff', image: '/images/products/sardinia-white.jpg' },
+      { name: 'Sand', hex: '#d4a574', image: '/images/products/sardinia-sand.jpg' },
+    ],
+    sizes: ['One Size'],
+    isNew: true,
+    inStock: true,
+    material: '100% Organic Cotton',
+  },
+  {
+    id: '7',
+    name: 'Athens Wrap Bikini',
+    slug: 'athens-wrap-bikini',
+    description: 'A wrap-style bikini set featuring a flattering V-neckline and tie sides. Adjustable for the perfect fit.',
+    price: 139,
+    images: [
+      '/images/products/athens-1.jpg',
+      '/images/products/athens-2.jpg',
+    ],
+    category: 'bikini',
+    collection: 'santorini-dreams',
+    colors: [
+      { name: 'Olive', hex: '#65a30d', image: '/images/products/athens-olive.jpg' },
+      { name: 'Wine', hex: '#881337', image: '/images/products/athens-wine.jpg' },
+      { name: 'White', hex: '#ffffff', image: '/images/products/athens-white.jpg' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L'],
+    isBestSeller: true,
+    inStock: true,
+    material: '78% Recycled Polyester, 22% Elastane',
+  },
+  {
+    id: '8',
+    name: 'Corsica Ruched One-Piece',
+    slug: 'corsica-ruched-one-piece',
+    description: 'A stunning ruched one-piece that flatters every figure. Features a plunging neckline and open back.',
+    price: 169,
+    images: [
+      '/images/products/corsica-1.jpg',
+      '/images/products/corsica-2.jpg',
+    ],
+    category: 'one-piece',
+    collection: 'mediterranean-summer',
+    colors: [
+      { name: 'Emerald', hex: '#047857', image: '/images/products/corsica-emerald.jpg' },
+      { name: 'Black', hex: '#171717', image: '/images/products/corsica-black.jpg' },
+      { name: 'Coral', hex: '#f97316', image: '/images/products/corsica-coral.jpg' },
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    tags: ['premium', 'flattering'],
+    inStock: true,
+    material: '80% Recycled Nylon, 20% Elastane',
   },
 ];
 
@@ -145,24 +225,26 @@ export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }
 
-export function getFeaturedProducts(): Product[] {
-  return products.filter((p) => p.featured);
-}
-
-export function getFeaturedCollections(): Collection[] {
-  return collections.filter((c) => c.featured);
-}
-
 export function getCollectionBySlug(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
-export function getProductsByCollection(slug: string): Product[] {
-  if (slug === 'bikinis') {
-    return products.filter((p) => p.category === 'bikini');
-  }
-  if (slug === 'one-pieces') {
-    return products.filter((p) => p.category === 'one-piece');
-  }
-  return products.filter((p) => p.collection === slug);
+export function getProductsByCollection(collectionSlug: string): Product[] {
+  return products.filter((p) => p.collection === collectionSlug);
+}
+
+export function getProductsByCategory(category: string): Product[] {
+  return products.filter((p) => p.category === category);
+}
+
+export function getFeaturedProducts(limit: number = 4): Product[] {
+  return products.filter((p) => p.isBestSeller || p.isNew).slice(0, limit);
+}
+
+export function getNewArrivals(limit: number = 4): Product[] {
+  return products.filter((p) => p.isNew).slice(0, limit);
+}
+
+export function getBestSellers(limit: number = 4): Product[] {
+  return products.filter((p) => p.isBestSeller).slice(0, limit);
 }

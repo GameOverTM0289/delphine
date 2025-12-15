@@ -1,63 +1,238 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { validateEmail } from '@/lib/utils';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validation = validateEmail(email);
+    if (!validation.valid) {
+      setStatus('error');
+      setMessage(validation.error || 'Invalid email');
+      return;
+    }
+
+    setStatus('loading');
+    
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setStatus('success');
+        setMessage('Welcome to the Delphine family! ✨');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Something went wrong');
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Failed to subscribe. Please try again.');
+    }
+  };
+
+  const footerLinks = {
+    shop: [
+      { href: '/shop', label: 'All Products' },
+      { href: '/collections', label: 'Collections' },
+      { href: '/shop?category=new', label: 'New Arrivals' },
+      { href: '/shop?category=sale', label: 'Sale' },
+    ],
+    help: [
+      { href: '/shipping', label: 'Shipping' },
+      { href: '/returns', label: 'Returns' },
+      { href: '/size-guide', label: 'Size Guide' },
+      { href: '/faq', label: 'FAQ' },
+    ],
+    company: [
+      { href: '/about', label: 'About Us' },
+      { href: '/sustainability', label: 'Sustainability' },
+      { href: '/contact', label: 'Contact' },
+      { href: '/careers', label: 'Careers' },
+    ],
+    legal: [
+      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/terms', label: 'Terms of Service' },
+      { href: '/cookies', label: 'Cookie Policy' },
+    ],
+  };
+
   return (
-    <footer className="bg-cream py-16">
-      <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+    <footer className="bg-gray-900 text-white">
+      {/* Newsletter Section */}
+      <div className="bg-gradient-to-r from-ocean-600 to-ocean-500">
+        <div className="container-custom py-12">
+          <div className="max-w-2xl mx-auto text-center">
+            <h3 className="font-display text-2xl md:text-3xl font-medium mb-3">
+              Join the Delphine Family
+            </h3>
+            <p className="text-ocean-100 mb-6">
+              Subscribe for exclusive offers, new arrivals, and Mediterranean inspiration.
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (status !== 'idle') setStatus('idle');
+                }}
+                placeholder="Enter your email"
+                className="flex-1 h-12 px-4 bg-white/10 border border-white/30 rounded-lg
+                         text-white placeholder:text-white/60
+                         focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent
+                         transition-all"
+              />
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="h-12 px-6 bg-white text-ocean-600 font-medium rounded-lg
+                         hover:bg-ocean-50 transition-colors
+                         disabled:opacity-70 disabled:cursor-not-allowed
+                         flex items-center justify-center gap-2"
+              >
+                {status === 'loading' ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Subscribing...
+                  </>
+                ) : (
+                  'Subscribe'
+                )}
+              </button>
+            </form>
+            {message && (
+              <p className={`mt-3 text-sm ${status === 'success' ? 'text-white' : 'text-coral-200'}`}>
+                {message}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer */}
+      <div className="container-custom py-16">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="font-display text-2xl tracking-tight">
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="font-display text-2xl font-medium">
               Delphine
             </Link>
-            <p className="mt-4 text-sm text-black/60 leading-relaxed">
-              Mediterranean-inspired swimwear crafted for elegance and comfort.
+            <p className="mt-4 text-sm text-gray-400 leading-relaxed">
+              Elegant swimwear inspired by the Mediterranean coastline.
             </p>
+            {/* Social Links */}
+            <div className="flex gap-4 mt-6">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Pinterest">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/>
+                </svg>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="TikTok">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          {/* Shop */}
+          {/* Shop Links */}
           <div>
-            <h4 className="font-medium text-sm tracking-wide mb-4">Shop</h4>
+            <h4 className="font-medium text-sm uppercase tracking-wider mb-4">Shop</h4>
             <ul className="space-y-3">
-              <li><Link href="/shop" className="text-sm text-black/60 hover:text-black">All Products</Link></li>
-              <li><Link href="/collections/bikinis" className="text-sm text-black/60 hover:text-black">Bikinis</Link></li>
-              <li><Link href="/collections/one-pieces" className="text-sm text-black/60 hover:text-black">One Pieces</Link></li>
+              {footerLinks.shop.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Help */}
+          {/* Help Links */}
           <div>
-            <h4 className="font-medium text-sm tracking-wide mb-4">Help</h4>
+            <h4 className="font-medium text-sm uppercase tracking-wider mb-4">Help</h4>
             <ul className="space-y-3">
-              <li><Link href="/contact" className="text-sm text-black/60 hover:text-black">Contact</Link></li>
-              <li><Link href="/shipping" className="text-sm text-black/60 hover:text-black">Shipping</Link></li>
-              <li><Link href="/returns" className="text-sm text-black/60 hover:text-black">Returns</Link></li>
-              <li><Link href="/size-guide" className="text-sm text-black/60 hover:text-black">Size Guide</Link></li>
+              {footerLinks.help.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Company Links */}
           <div>
-            <h4 className="font-medium text-sm tracking-wide mb-4">Legal</h4>
+            <h4 className="font-medium text-sm uppercase tracking-wider mb-4">Company</h4>
             <ul className="space-y-3">
-              <li><Link href="/terms" className="text-sm text-black/60 hover:text-black">Terms</Link></li>
-              <li><Link href="/privacy" className="text-sm text-black/60 hover:text-black">Privacy</Link></li>
-              <li><Link href="/cookies" className="text-sm text-black/60 hover:text-black">Cookies</Link></li>
+              {footerLinks.company.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal Links */}
+          <div>
+            <h4 className="font-medium text-sm uppercase tracking-wider mb-4">Legal</h4>
+            <ul className="space-y-3">
+              {footerLinks.legal.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-black/60">
-            © {new Date().getFullYear()} Delphine. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-black/60 hover:text-black">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-              </svg>
-            </a>
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-gray-800">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} Delphine Swimwear. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Payment Methods:</span>
+              <div className="flex items-center gap-2 text-gray-400">
+                <span className="text-xs">💳 Visa</span>
+                <span className="text-xs">💳 Mastercard</span>
+                <span className="text-xs">💳 PayPal</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

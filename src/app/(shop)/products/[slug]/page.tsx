@@ -1,344 +1,138 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getProductBySlug } from '@/lib/data/products';
+import { formatPrice, getImageUrl, cn } from '@/lib/utils';
 import { useCartStore } from '@/lib/store/cart';
-import { formatPrice } from '@/lib/utils';
 
-interface ProductPageProps {
-  params: { slug: string };
-}
-
-export default function ProductPage({ params }: ProductPageProps) {
-  const [product, setProduct] = useState<any>(null);
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
-  const [error, setError] = useState('');
-  const { addItem, toggleCart } = useCartStore();
+export default function ProductPage({ params }: { params: { slug: string } }) {
+  const product = getProductBySlug(params.slug);
+  const { addItem, openCart } = useCartStore();
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch(`/api/products/${params.slug}`);
-        const data = await res.json();
-        setProduct(data);
-        
-        // Set default color if available
-        if (data?.variants?.length > 0) {
-          const firstColor = data.variants[0].color;
-          setSelectedColor(firstColor);
-        }
-        
-        // Fetch related products
-        const relatedRes = await fetch('/api/products?limit=4');
-        const relatedData = await relatedRes.json();
-        setRelatedProducts(relatedData.filter((p: any) => p.slug !== params.slug).slice(0, 4));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [params.slug]);
+    useCartStore.persist.rehydrate();
+  }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-20 bg-ivory-100">
-        <div className="w-8 h-8 border border-charcoal-300 border-t-charcoal-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (!product) notFound();
 
-  if (!product) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-20 bg-ivory-100">
-        <h1 className="font-display text-3xl text-charcoal-800 mb-6">Product Not Found</h1>
-        <Link href="/shop" className="px-8 py-3 bg-charcoal-800 text-ivory-100 text-xs tracking-widest uppercase">
-          Back to Shop
-        </Link>
-      </div>
-    );
-  }
-
-  // Get unique colors and sizes
-  const colorsMap = new Map();
-  const sizesSet = new Set<string>();
-  
-  product.variants?.forEach((v: any) => {
-    if (v.color && !colorsMap.has(v.color)) {
-      colorsMap.set(v.color, v.colorHex || '#888888');
-    }
-    if (v.size) {
-      sizesSet.add(v.size);
-    }
-  });
-  
-  const colors = Array.from(colorsMap.entries()).map(([name, hex]) => ({ name, hex }));
-  const sizes = Array.from(sizesSet);
-
-  // Check if selected combo is in stock
-  const getVariant = (size: string, color: string) => {
-    return product.variants?.find((v: any) => v.size === size && v.color === color);
-  };
-
-  const selectedVariant = selectedSize && selectedColor ? getVariant(selectedSize, selectedColor) : null;
-  const isInStock = selectedVariant?.stockQuantity > 0;
-
-  const handleAddToCart = () => {
-    setError('');
-    
-    if (!selectedSize) {
-      setError('Please select a size');
-      return;
-    }
-    if (!selectedColor) {
-      setError('Please select a color');
-      return;
-    }
-    if (!selectedVariant) {
-      setError('This combination is not available');
-      return;
-    }
-    if (!isInStock) {
-      setError('This item is out of stock');
-      return;
-    }
-
-    setAdding(true);
-    
-    const imageUrl = product.images?.[0]?.url || '';
-    
+  const handleAddToCart = async () => {
+    if (!selectedSize) return;
+    setIsAdding(true);
+    await new Promise((r) => setTimeout(r, 300));
     addItem({
       productId: product.id,
-      variantId: selectedVariant.id,
       productName: product.name,
-      productSlug: product.slug,
-      productImage: imageUrl,
-      variantName: `${selectedSize} / ${selectedColor}`,
+      productImage: product.colors[selectedColor]?.image || product.images[0],
+      variantId: `${product.id}-${product.colors[selectedColor]?.name}-${selectedSize}`,
+      variantName: `${product.colors[selectedColor]?.name} / ${selectedSize}`,
       size: selectedSize,
-      color: selectedColor,
-      colorHex: selectedVariant.colorHex || '#000',
-      price: selectedVariant.price || product.price,
+      color: product.colors[selectedColor]?.name || '',
+      price: product.price,
+      quantity,
     });
-    
-    setTimeout(() => {
-      setAdding(false);
-      toggleCart();
-    }, 500);
+    setIsAdding(false);
+    openCart();
   };
 
-  const images = product.images || [];
-
   return (
-    <div className="min-h-screen bg-ivory-100 pt-24">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-8">
-          <ol className="flex items-center gap-2 text-xs text-stone-500">
-            <li><Link href="/" className="hover:text-charcoal-700 transition-colors">Home</Link></li>
-            <li>/</li>
-            <li><Link href="/shop" className="hover:text-charcoal-700 transition-colors">Shop</Link></li>
-            <li>/</li>
-            <li className="text-charcoal-700">{product.name}</li>
-          </ol>
+    <section className="pt-24 pb-16">
+      <div className="container-custom">
+        <nav className="text-sm text-gray-500 mb-8">
+          <Link href="/" className="hover:text-gray-900">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/shop" className="hover:text-gray-900">Shop</Link>
+          <span className="mx-2">/</span>
+          <span className="text-gray-900">{product.name}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* Images */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-4">
-            <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden">
-              {images[selectedImage] && (
-                <Image
-                  src={images[selectedImage].url}
-                  alt={product.name}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              )}
+            <div className="aspect-[3/4] relative bg-gray-100 rounded-2xl overflow-hidden">
+              <Image src={getImageUrl(product.images[mainImage])} alt={product.name} fill className="object-cover" priority />
+              {product.isNew && <span className="absolute top-4 left-4 badge-ocean">New</span>}
+              {product.isBestSeller && <span className="absolute top-4 left-4 badge-coral">Best Seller</span>}
             </div>
-            
-            {images.length > 1 && (
-              <div className="flex gap-3">
-                {images.map((img: any, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`relative w-20 aspect-[3/4] bg-ivory-200 overflow-hidden transition-opacity ${
-                      selectedImage === index ? 'ring-1 ring-charcoal-700' : 'opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <Image src={img.url} alt="" fill className="object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {product.images.map((img, i) => (
+                <button key={i} onClick={() => setMainImage(i)} className={cn('relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 border-2', mainImage === i ? 'border-ocean-500' : 'border-transparent')}>
+                  <Image src={getImageUrl(img)} alt="" fill className="object-cover" />
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Product Info */}
-          <div className="lg:py-8">
-            <h1 className="font-display text-3xl md:text-4xl font-light text-charcoal-800 mb-4">{product.name}</h1>
-            
-            <div className="mb-8">
-              {product.compareAtPrice && product.compareAtPrice > product.price ? (
-                <div className="flex items-center gap-3">
-                  <span className="font-display text-xl text-stone-400 line-through">
-                    {formatPrice(product.compareAtPrice)}
-                  </span>
-                  <span className="font-display text-xl text-charcoal-800">
-                    {formatPrice(product.price)}
-                  </span>
-                </div>
-              ) : (
-                <span className="font-display text-xl text-charcoal-800">
-                  {formatPrice(product.price)}
-                </span>
-              )}
+          <div>
+            <h1 className="heading-2 mb-4">{product.name}</h1>
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-2xl font-medium">{formatPrice(product.price)}</span>
+              {product.compareAtPrice && <span className="text-lg text-gray-400 line-through">{formatPrice(product.compareAtPrice)}</span>}
             </div>
+            <p className="text-gray-600 leading-relaxed mb-8">{product.description}</p>
 
-            {/* Color Selection */}
-            {colors.length > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium tracking-widest uppercase text-stone-500">Color</span>
-                  <span className="text-sm text-charcoal-700">{selectedColor}</span>
-                </div>
-                <div className="flex gap-3">
-                  {colors.map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => setSelectedColor(c.name)}
-                      className={`w-10 h-10 rounded-full transition-all ${
-                        selectedColor === c.name 
-                          ? 'ring-2 ring-offset-2 ring-charcoal-700' 
-                          : 'hover:ring-2 hover:ring-offset-2 hover:ring-stone-300'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    />
+            {product.colors.length > 0 && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-3">Color: {product.colors[selectedColor]?.name}</label>
+                <div className="flex gap-2">
+                  {product.colors.map((color, i) => (
+                    <button key={color.name} onClick={() => setSelectedColor(i)} className={cn('w-10 h-10 rounded-full border-2', selectedColor === i ? 'border-gray-900' : 'border-gray-200')} style={{ backgroundColor: color.hex }} title={color.name} />
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Size Selection */}
-            {sizes.length > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-medium tracking-widest uppercase text-stone-500">Size</span>
-                  <Link href="/size-guide" className="text-xs text-stone-500 underline hover:text-charcoal-700 transition-colors">
-                    Size Guide
-                  </Link>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((size) => {
-                    const variant = selectedColor ? getVariant(size, selectedColor) : null;
-                    const inStock = variant?.stockQuantity > 0;
-                    
-                    return (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        disabled={!inStock}
-                        className={`min-w-[56px] h-12 px-4 text-xs font-medium tracking-wider uppercase border transition-all ${
-                          selectedSize === size
-                            ? 'border-charcoal-800 bg-charcoal-800 text-ivory-100'
-                            : inStock
-                              ? 'border-stone-300 text-charcoal-700 hover:border-charcoal-700'
-                              : 'border-stone-200 text-stone-300 cursor-not-allowed line-through'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-medium">Size</label>
+                <Link href="/size-guide" className="text-sm text-ocean-600 hover:underline">Size Guide</Link>
               </div>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm">
-                {error}
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((size) => (
+                  <button key={size} onClick={() => setSelectedSize(size)} className={cn('h-11 min-w-[44px] px-4 border-2 rounded-lg font-medium transition-all', selectedSize === size ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 hover:border-gray-400')}>
+                    {size}
+                  </button>
+                ))}
               </div>
-            )}
+              {!selectedSize && <p className="text-sm text-red-500 mt-2">Please select a size</p>}
+            </div>
 
-            {/* Add to Cart */}
-            <button
-              onClick={handleAddToCart}
-              disabled={adding}
-              className="w-full py-4 bg-charcoal-800 text-ivory-100 text-xs font-medium tracking-widest uppercase hover:bg-charcoal-900 transition-colors disabled:opacity-50"
-            >
-              {adding ? 'Adding...' : 'Add to Bag'}
+            <div className="mb-8">
+              <label className="block text-sm font-medium mb-3">Quantity</label>
+              <div className="flex items-center border border-gray-200 rounded-lg w-fit">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 flex items-center justify-center text-gray-500 hover:text-gray-900">-</button>
+                <span className="w-12 text-center font-medium">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} className="w-11 h-11 flex items-center justify-center text-gray-500 hover:text-gray-900">+</button>
+              </div>
+            </div>
+
+            <button onClick={handleAddToCart} disabled={!selectedSize || isAdding} className="btn-primary w-full py-4 text-base mb-4 disabled:opacity-50">
+              {isAdding ? 'Adding...' : 'Add to Bag'}
             </button>
 
-            {/* Description */}
-            {product.description && (
-              <div className="mt-12 pt-8 border-t border-stone-200">
-                <h3 className="text-xs font-medium tracking-widest uppercase text-stone-500 mb-4">Description</h3>
-                <p className="text-sm text-stone-600 leading-relaxed">{product.description}</p>
+            {product.material && (
+              <div className="border-t border-gray-100 pt-6 mt-6">
+                <h3 className="font-medium mb-2">Material</h3>
+                <p className="text-sm text-gray-600">{product.material}</p>
               </div>
             )}
-
-            {/* Details */}
-            <div className="mt-8 pt-8 border-t border-stone-200">
-              <h3 className="text-xs font-medium tracking-widest uppercase text-stone-500 mb-4">Details</h3>
-              <ul className="space-y-2 text-sm text-stone-600">
-                <li>• Premium Italian Lycra</li>
-                <li>• UPF 50+ sun protection</li>
-                <li>• Chlorine resistant</li>
-                <li>• Quick-drying fabric</li>
-                <li>• Made in Europe</li>
-              </ul>
-            </div>
-
-            {/* Shipping Info */}
-            <div className="mt-8 pt-8 border-t border-stone-200">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Free Shipping</h4>
-                  <p className="text-xs text-stone-500">On orders over €100</p>
-                </div>
-                <div>
-                  <h4 className="text-xs font-medium tracking-wider uppercase text-charcoal-700 mb-1">Free Returns</h4>
-                  <p className="text-xs text-stone-500">Within 14 days</p>
-                </div>
+            {product.careInstructions && (
+              <div className="border-t border-gray-100 pt-6 mt-4">
+                <h3 className="font-medium mb-2">Care</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  {product.careInstructions.map((c, i) => <li key={i}>• {c}</li>)}
+                </ul>
               </div>
-            </div>
+            )}
           </div>
         </div>
-
-        {/* Recommended Products */}
-        {relatedProducts.length > 0 && (
-          <section className="mt-24 pt-16 border-t border-stone-200">
-            <h2 className="font-display text-2xl text-charcoal-800 text-center mb-12">You May Also Like</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6">
-              {relatedProducts.map((prod) => (
-                <Link key={prod.id} href={`/products/${prod.slug}`} className="group">
-                  <div className="relative aspect-[3/4] bg-ivory-200 overflow-hidden mb-4">
-                    {prod.images?.[0] && (
-                      <Image
-                        src={prod.images[0].url}
-                        alt={prod.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )}
-                  </div>
-                  <h3 className="font-display text-base text-charcoal-800 text-center mb-1">{prod.name}</h3>
-                  <p className="text-xs text-stone-500 text-center">{formatPrice(prod.price)}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,49 +1,22 @@
 export default function PrivacyPage() {
   return (
-    <section className="section pt-32">
-      <div className="container-narrow">
-        <h1 className="heading-1 mb-8">Privacy Policy</h1>
-        <div className="prose prose-gray max-w-none space-y-6 text-gray-600">
-          <p className="text-sm">Last updated: January 2024</p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">Information We Collect</h2>
-          <p>
-            We collect information you provide when making a purchase, creating an account, 
-            subscribing to our newsletter, or contacting us. This includes your name, email, 
-            shipping address, and payment information.
-          </p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">How We Use Your Information</h2>
-          <p>
-            We use your information to process orders, communicate with you about your purchases, 
-            send promotional materials (with your consent), and improve our services.
-          </p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">Data Security</h2>
-          <p>
-            We implement appropriate security measures to protect your personal information. 
-            Payment information is processed securely through encrypted connections.
-          </p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">Cookies</h2>
-          <p>
-            We use cookies to improve your browsing experience, remember your preferences, 
-            and analyze site traffic. You can control cookies through your browser settings.
-          </p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">Your Rights</h2>
-          <p>
-            You have the right to access, correct, or delete your personal data. 
-            Contact us at hello@delphineswimwear.com to exercise these rights.
-          </p>
-
-          <h2 className="heading-3 text-gray-900 mt-8">Contact</h2>
-          <p>
-            For privacy-related questions, please contact our Data Protection Officer at 
-            privacy@delphineswimwear.com.
-          </p>
+    <>
+      <section className="bg-sand-50 pt-32 pb-16">
+        <div className="container-custom text-center">
+          <h1 className="heading-1 mb-4">Privacy Policy</h1>
+          <p className="body-text-lg text-gray-600">Last updated: December 2024</p>
         </div>
-      </div>
-    </section>
+      </section>
+      <section className="section">
+        <div className="container-narrow">
+          <div className="prose max-w-none space-y-8 text-gray-600">
+            <div><h2 className="heading-4 text-gray-900 mb-4">Information We Collect</h2><p>We collect information you provide directly, including name, email, shipping address, and payment information when you make a purchase.</p></div>
+            <div><h2 className="heading-4 text-gray-900 mb-4">How We Use Your Information</h2><p>We use your information to process orders, send updates, and improve our services. We never sell your personal data to third parties.</p></div>
+            <div><h2 className="heading-4 text-gray-900 mb-4">Data Security</h2><p>We implement industry-standard security measures to protect your personal information. All transactions are encrypted using SSL technology.</p></div>
+            <div><h2 className="heading-4 text-gray-900 mb-4">Contact Us</h2><p>If you have questions about our privacy practices, please contact us at privacy@delphineswimwear.com.</p></div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

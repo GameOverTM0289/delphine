@@ -1,35 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db/prisma';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+const subscribers: Set<string> = new Set();
+
+export async function POST(request: Request) {
   try {
     const { email } = await request.json();
-
-    if (!email || !email.includes('@')) {
-      return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
-
-    const existing = await prisma.newsletterSubscriber.findUnique({
-      where: { email: email.toLowerCase() },
-    });
-
-    if (existing) {
-      if (existing.isActive) {
-        return NextResponse.json({ error: 'Already subscribed' }, { status: 400 });
-      }
-      await prisma.newsletterSubscriber.update({
-        where: { email: email.toLowerCase() },
-        data: { isActive: true, unsubscribedAt: null },
-      });
-      return NextResponse.json({ success: true, message: 'Welcome back!' });
+    if (subscribers.has(email.toLowerCase())) {
+      return NextResponse.json({ error: 'Already subscribed' }, { status: 400 });
     }
-
-    await prisma.newsletterSubscriber.create({
-      data: { email: email.toLowerCase() },
-    });
-
-    return NextResponse.json({ success: true, message: 'Subscribed!' });
-  } catch (error) {
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    subscribers.add(email.toLowerCase());
+    return NextResponse.json({ success: true, message: 'Successfully subscribed!' });
+  } catch {
+    return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 });
   }
 }

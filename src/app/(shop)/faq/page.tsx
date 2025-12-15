@@ -1,84 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 
 const faqs = [
-  {
-    category: 'Orders & Shipping',
-    questions: [
-      { q: 'How long does shipping take?', a: 'Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.' },
-      { q: 'Do you offer free shipping?', a: 'Yes! Free standard shipping on all orders over €100 within Europe.' },
-      { q: 'How can I track my order?', a: 'Once shipped, you\'ll receive an email with tracking information.' },
-    ],
-  },
-  {
-    category: 'Returns & Exchanges',
-    questions: [
-      { q: 'What is your return policy?', a: 'We accept returns within 14 days of delivery for unworn items with tags attached.' },
-      { q: 'How do I exchange an item?', a: 'Start a return through your account and select "exchange" as the reason.' },
-      { q: 'How long do refunds take?', a: 'Refunds are processed within 3-5 business days after we receive your return.' },
-    ],
-  },
-  {
-    category: 'Products & Sizing',
-    questions: [
-      { q: 'How do I find my size?', a: 'Check our Size Guide for detailed measurements. If between sizes, we recommend sizing up.' },
-      { q: 'What materials do you use?', a: 'Premium Italian Lycra with UPF 50+ protection, chlorine-resistant and quick-drying.' },
-      { q: 'How do I care for my swimwear?', a: 'Rinse in cold water after each use, hand wash with mild soap, lay flat to dry.' },
-    ],
-  },
+  { q: 'How do I find my size?', a: 'Check our size guide for detailed measurements. We recommend measuring yourself and comparing to our size chart.' },
+  { q: 'What is your return policy?', a: 'We offer free returns within 30 days. Items must be unworn with tags attached.' },
+  { q: 'How long does shipping take?', a: 'Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days.' },
+  { q: 'Are your products sustainable?', a: 'Yes! Our swimwear is made from recycled ocean plastics and sustainable materials.' },
+  { q: 'How do I care for my swimwear?', a: 'Hand wash in cold water, avoid bleach, and lay flat to dry. Rinse after swimming in chlorinated or salt water.' },
+  { q: 'Do you ship internationally?', a: 'Yes, we ship to over 50 countries. International shipping rates vary by location.' },
 ];
 
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState<string | null>(null);
-
+  const [open, setOpen] = useState<number | null>(0);
   return (
     <>
-      <section className="pt-32 pb-16 bg-ivory-100">
-        <div className="container-luxury text-center">
-          <span className="label animate-fade-down">Support</span>
-          <h1 className="heading-display mt-4 animate-fade-up">FAQ</h1>
+      <section className="bg-sand-50 pt-32 pb-16">
+        <div className="container-custom text-center">
+          <h1 className="heading-1 mb-4">FAQ</h1>
+          <p className="body-text-lg text-gray-600 max-w-xl mx-auto">Frequently asked questions.</p>
         </div>
       </section>
-
-      <section className="section bg-ivory-200">
+      <section className="section">
         <div className="container-narrow">
-          {faqs.map((category, catIndex) => (
-            <div key={category.category} className="mb-16 last:mb-0">
-              <h2 className="label text-charcoal-700 mb-8">{category.category}</h2>
-              <div className="space-y-2">
-                {category.questions.map((item, qIndex) => {
-                  const key = `${catIndex}-${qIndex}`;
-                  const isOpen = openIndex === key;
-                  return (
-                    <div key={key} className="bg-ivory-100">
-                      <button
-                        onClick={() => setOpenIndex(isOpen ? null : key)}
-                        className="w-full flex items-center justify-between p-6 text-left"
-                      >
-                        <span className="font-display text-lg text-charcoal-800 pr-4">{item.q}</span>
-                        <span className={`text-charcoal-400 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
-                          +
-                        </span>
-                      </button>
-                      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-48' : 'max-h-0'}`}>
-                        <p className="px-6 pb-6 body text-stone-500">{item.a}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <button onClick={() => setOpen(open === i ? null : i)} className="w-full p-6 text-left flex justify-between items-center">
+                  <span className="font-medium">{faq.q}</span>
+                  <svg className={`w-5 h-5 transition-transform ${open === i ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                {open === i && <div className="px-6 pb-6 text-gray-600">{faq.a}</div>}
               </div>
-            </div>
-          ))}
-
-          {/* Contact CTA */}
-          <div className="mt-20 p-12 bg-charcoal-800 text-ivory-100 text-center">
-            <h3 className="font-display text-2xl font-light mb-4">Still have questions?</h3>
-            <p className="body text-stone-400 mb-8">Our team is here to help.</p>
-            <Link href="/contact" className="btn-outline border-ivory-100 text-ivory-100 hover:bg-ivory-100 hover:text-charcoal-800">
-              Contact Us
-            </Link>
+            ))}
           </div>
         </div>
       </section>
