@@ -1,9 +1,16 @@
 import prisma from '@/lib/db/prisma';
 
+export const dynamic = 'force-dynamic';
+
 async function getSettings() {
-  return prisma.siteSettings.findUnique({
-    where: { id: 'settings' },
-  });
+  try {
+    return await prisma.siteSettings.findUnique({
+      where: { id: 'settings' },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return null;
+  }
 }
 
 export default async function AdminSettingsPage() {

@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-charcoal-700 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-ocean-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -44,73 +44,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden lg:block fixed h-full">
+      <aside className="w-64 bg-white border-r border-gray-200 hidden lg:block">
         <div className="p-6 border-b border-gray-200">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="relative h-7 w-24">
-              <Image
-                src="/logo.png"
-                alt="Delphine Admin"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-xs text-gray-500 font-medium">Admin</span>
+          <Link href="/admin" className="font-display text-xl">
+            Delphine Admin
           </Link>
         </div>
         <nav className="p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 16px',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  color: isActive ? '#1a1a1a' : '#4a4a4a',
-                  backgroundColor: isActive ? '#f3f4f6' : 'transparent',
-                  fontWeight: isActive ? '500' : '400',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = '#f9fafb';
-                    e.currentTarget.style.color = '#1a1a1a';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#4a4a4a';
-                  }
-                }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-                </svg>
-                {item.label}
-              </Link>
-            );
-          })}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'admin-nav-item',
+                pathname === item.href && 'active'
+              )}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+              </svg>
+              {item.label}
+            </Link>
+          ))}
         </nav>
         <div className="absolute bottom-0 left-0 w-64 p-4 border-t border-gray-200">
-          <Link 
-            href="/" 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              color: '#4a4a4a',
-            }}
-          >
+          <Link href="/" className="admin-nav-item">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -120,8 +78,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 overflow-auto">
-        <div className="p-4 md:p-8">{children}</div>
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">{children}</div>
       </main>
     </div>
   );

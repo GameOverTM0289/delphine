@@ -1,12 +1,19 @@
 import prisma from '@/lib/db/prisma';
 import { formatDate } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 async function getCustomers() {
-  return prisma.user.findMany({
-    where: { role: 'CUSTOMER' },
-    include: { _count: { select: { orders: true } } },
-    orderBy: { createdAt: 'desc' },
-  });
+  try {
+    return await prisma.user.findMany({
+      where: { role: 'CUSTOMER' },
+      include: { _count: { select: { orders: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return [];
+  }
 }
 
 export default async function AdminCustomersPage() {

@@ -1,42 +1,27 @@
 import type { Metadata } from 'next';
-import { Raleway, Playfair_Display } from 'next/font/google';
+import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
+import { Providers } from '@/components/Providers';
 
-const raleway = Raleway({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-raleway',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter',
+  weight: ['300', '400', '500'],
 });
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600'],
 });
 
 export const metadata: Metadata = {
-  title: 'Delphine | Mediterranean Swimwear',
-  description: 'Elegant swimwear inspired by the Mediterranean coastline. Premium quality, sustainable materials, and timeless designs.',
-  keywords: ['swimwear', 'bikini', 'beachwear', 'mediterranean', 'luxury swimwear', 'sustainable fashion'],
-  authors: [{ name: 'Delphine Swimwear' }],
-  openGraph: {
-    title: 'Delphine | Mediterranean Swimwear',
-    description: 'Elegant swimwear inspired by the Mediterranean coastline.',
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'Delphine Swimwear',
+  title: {
+    default: 'Delphine | Luxury Swimwear',
+    template: '%s | Delphine',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Delphine | Mediterranean Swimwear',
-    description: 'Elegant swimwear inspired by the Mediterranean coastline.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  description: 'Elegant swimwear crafted with premium materials. Timeless designs for the modern woman.',
+  keywords: ['luxury swimwear', 'designer bikini', 'premium swimwear', 'elegant beachwear'],
 };
 
 export default function RootLayout({
@@ -45,9 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`${raleway.variable} ${playfair.variable} font-sans`}>
-        {children}
+    <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
+      <body className="font-sans antialiased bg-ivory-100 text-charcoal-700">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
