@@ -70,7 +70,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="inline-block mb-6">
-              <div className="relative h-8 w-28">
+              <div className="relative h-10 w-36">
                 <Image
                   src="/logo.png"
                   alt="Delphine"

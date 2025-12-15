@@ -38,10 +38,6 @@ export default function ShippingPage() {
             <h2 className="text-display text-xl mb-6">Shipping Costs</h2>
             <div className="bg-white p-6 space-y-4">
               <div className="flex justify-between py-3 border-b border-charcoal-100">
-                <span className="text-sm">Orders over €100</span>
-                <span className="text-sm text-charcoal-600">Free</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-charcoal-100">
                 <span className="text-sm">Standard Shipping</span>
                 <span className="text-sm text-charcoal-600">€8.99</span>
               </div>
