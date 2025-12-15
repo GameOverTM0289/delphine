@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -14,11 +9,13 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**.cloudinary.com',
       },
     ],
-    unoptimized: true,
+    unoptimized: false,
   },
+  // For static export if needed
+  // output: 'export',
 };
 
 export default nextConfig;

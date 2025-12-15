@@ -1,33 +1,42 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Raleway, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { Providers } from '@/components/Providers';
-import CustomCursor from '@/components/ui/CustomCursor';
 
-const inter = Inter({
+const raleway = Raleway({
   subsets: ['latin'],
-  variable: '--font-inter',
-  weight: ['300', '400', '500'],
+  variable: '--font-raleway',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: 'Delphine | Rhythm of a Free Spirit',
-    template: '%s | Delphine',
+  title: 'Delphine | Mediterranean Swimwear',
+  description: 'Elegant swimwear inspired by the Mediterranean coastline. Premium quality, sustainable materials, and timeless designs.',
+  keywords: ['swimwear', 'bikini', 'beachwear', 'mediterranean', 'luxury swimwear', 'sustainable fashion'],
+  authors: [{ name: 'Delphine Swimwear' }],
+  openGraph: {
+    title: 'Delphine | Mediterranean Swimwear',
+    description: 'Elegant swimwear inspired by the Mediterranean coastline.',
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'Delphine Swimwear',
   },
-  description: 'Elegant swimwear crafted with premium materials. Timeless designs for the modern woman. Rhythm of a Free Spirit.',
-  keywords: ['luxury swimwear', 'designer bikini', 'premium swimwear', 'elegant beachwear', 'Delphine'],
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Delphine | Mediterranean Swimwear',
+    description: 'Elegant swimwear inspired by the Mediterranean coastline.',
   },
-  manifest: '/manifest.json',
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -36,21 +45,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="32x32" />
-        <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
-        <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-sans antialiased bg-cream text-black">
-        <Providers>
-          <CustomCursor />
-          {children}
-        </Providers>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${raleway.variable} ${playfair.variable} font-sans`}>
+        {children}
       </body>
     </html>
   );

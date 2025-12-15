@@ -1,65 +1,36 @@
-import Link from 'next/link';
 import Image from 'next/image';
-
-const collections = [
-  { 
-    name: 'Bikinis', 
-    slug: 'bikinis', 
-    image: 'https://images.unsplash.com/photo-1570976447640-ac859083963f?w=800&q=80',
-    count: 3,
-  },
-  { 
-    name: 'One Pieces', 
-    slug: 'one-pieces', 
-    image: 'https://images.unsplash.com/photo-1520981825232-ece5fae45120?w=800&q=80',
-    count: 2,
-  },
-];
+import Link from 'next/link';
+import { collections } from '@/lib/data/products';
+import { getImageUrl } from '@/lib/utils';
 
 export default function CollectionsPage() {
   return (
-    <main className="min-h-screen bg-cream pt-28 pb-20">
-      {/* Header */}
-      <section className="pb-12 md:pb-16">
-        <div className="container-main text-center">
-          <h1 className="text-display text-3xl md:text-4xl mb-4">Collections</h1>
-          <p className="text-body max-w-md mx-auto">
-            Explore our carefully curated swimwear collections.
+    <>
+      <section className="bg-sand-50 pt-32 pb-16">
+        <div className="container-custom text-center">
+          <h1 className="heading-1 mb-4">Collections</h1>
+          <p className="body-text-lg text-gray-600 max-w-xl mx-auto">
+            Each collection tells a story inspired by Mediterranean destinations.
           </p>
         </div>
       </section>
-
-      {/* Collections */}
-      <section className="pb-12">
-        <div className="container-main">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <section className="section">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {collections.map((collection) => (
-              <Link 
-                key={collection.slug} 
-                href={`/collections/${collection.slug}`}
-                className="group relative aspect-[3/4] overflow-hidden"
-              >
-                <Image
-                  src={collection.image}
-                  alt={collection.name}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <h2 className="text-display text-2xl md:text-3xl mb-2">{collection.name}</h2>
-                    <p className="text-xs tracking-wider mb-4">{collection.count} pieces</p>
-                    <span className="text-xs tracking-[0.2em] uppercase border-b border-white pb-1 group-hover:border-transparent transition-colors">
-                      View Collection
-                    </span>
-                  </div>
+              <Link key={collection.id} href={`/collections/${collection.slug}`} className="group relative aspect-[4/3] rounded-2xl overflow-hidden">
+                <Image src={getImageUrl(collection.image)} alt={collection.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
+                  <span className="text-sm text-white/70 mb-2">{collection.productCount} Products</span>
+                  <h2 className="font-display text-3xl font-medium mb-2">{collection.name}</h2>
+                  <p className="text-white/80 line-clamp-2">{collection.description}</p>
                 </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }
